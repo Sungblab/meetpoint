@@ -1,0 +1,600 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-28T14:07:57+00:00",
+  "title": "Design System: Meetpoint",
+  "extensions": {
+    "colorMeta": {
+      "table": {
+        "role": "neutral",
+        "displayName": "테이블보 검정",
+        "canonical": "oklch(18.7% 0 0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "cssVar": "--table"
+      },
+      "table-raised": {
+        "role": "neutral",
+        "displayName": "한 단 올라온 테이블",
+        "canonical": "oklch(23.9% 0 0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "cssVar": "--table-raised"
+      },
+      "table-line": {
+        "role": "neutral",
+        "displayName": "테이블 선",
+        "canonical": "oklch(32.0% 0 0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "cssVar": "--table-line"
+      },
+      "on-table": {
+        "role": "neutral",
+        "displayName": "테이블 위 글자",
+        "canonical": "oklch(96.3% 0 0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "cssVar": "--on-table"
+      },
+      "on-table-2": {
+        "role": "neutral",
+        "displayName": "테이블 위 보조 글자",
+        "canonical": "oklch(72.7% 0.007 106.6)",
+        "tonalRamp": [
+          "oklch(15% 0.007 106.6)",
+          "oklch(26% 0.007 106.6)",
+          "oklch(38% 0.007 106.6)",
+          "oklch(50% 0.007 106.6)",
+          "oklch(62% 0.007 106.6)",
+          "oklch(74% 0.007 106.6)",
+          "oklch(85% 0.007 106.6)",
+          "oklch(95% 0.007 106.6)"
+        ],
+        "cssVar": "--on-table-2"
+      },
+      "stock": {
+        "role": "neutral",
+        "displayName": "명찰 용지",
+        "canonical": "oklch(100.0% 0 0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "cssVar": "--stock"
+      },
+      "stock-2": {
+        "role": "neutral",
+        "displayName": "뒷면 용지",
+        "canonical": "oklch(95.4% 0.005 106.5)",
+        "tonalRamp": [
+          "oklch(15% 0.005 106.5)",
+          "oklch(26% 0.005 106.5)",
+          "oklch(38% 0.005 106.5)",
+          "oklch(50% 0.005 106.5)",
+          "oklch(62% 0.005 106.5)",
+          "oklch(74% 0.005 106.5)",
+          "oklch(85% 0.005 106.5)",
+          "oklch(95% 0.005 106.5)"
+        ],
+        "cssVar": "--stock-2"
+      },
+      "stock-line": {
+        "role": "neutral",
+        "displayName": "용지 선",
+        "canonical": "oklch(87.4% 0.008 106.6)",
+        "tonalRamp": [
+          "oklch(15% 0.008 106.6)",
+          "oklch(26% 0.008 106.6)",
+          "oklch(38% 0.008 106.6)",
+          "oklch(50% 0.008 106.6)",
+          "oklch(62% 0.008 106.6)",
+          "oklch(74% 0.008 106.6)",
+          "oklch(85% 0.008 106.6)",
+          "oklch(95% 0.008 106.6)"
+        ],
+        "cssVar": "--stock-line"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "잉크",
+        "canonical": "oklch(17.8% 0 0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "cssVar": "--ink"
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "옅은 잉크",
+        "canonical": "oklch(42.6% 0.008 106.7)",
+        "tonalRamp": [
+          "oklch(15% 0.008 106.7)",
+          "oklch(26% 0.008 106.7)",
+          "oklch(38% 0.008 106.7)",
+          "oklch(50% 0.008 106.7)",
+          "oklch(62% 0.008 106.7)",
+          "oklch(74% 0.008 106.7)",
+          "oklch(85% 0.008 106.7)",
+          "oklch(95% 0.008 106.7)"
+        ],
+        "cssVar": "--ink-2"
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "흐린 잉크",
+        "canonical": "oklch(52.6% 0.009 106.7)",
+        "tonalRamp": [
+          "oklch(15% 0.009 106.7)",
+          "oklch(26% 0.009 106.7)",
+          "oklch(38% 0.009 106.7)",
+          "oklch(50% 0.009 106.7)",
+          "oklch(62% 0.009 106.7)",
+          "oklch(74% 0.009 106.7)",
+          "oklch(85% 0.009 106.7)",
+          "oklch(95% 0.009 106.7)"
+        ],
+        "cssVar": "--ink-3"
+      },
+      "same": {
+        "role": "primary",
+        "displayName": "고수 노랑",
+        "canonical": "oklch(87.7% 0.174 92.5)",
+        "tonalRamp": [
+          "oklch(15% 0.174 92.5)",
+          "oklch(26% 0.174 92.5)",
+          "oklch(38% 0.174 92.5)",
+          "oklch(50% 0.174 92.5)",
+          "oklch(62% 0.174 92.5)",
+          "oklch(74% 0.174 92.5)",
+          "oklch(85% 0.174 92.5)",
+          "oklch(95% 0.174 92.5)"
+        ],
+        "cssVar": "--same"
+      },
+      "other": {
+        "role": "primary",
+        "displayName": "도움 보라",
+        "canonical": "oklch(52.2% 0.255 280.3)",
+        "tonalRamp": [
+          "oklch(15% 0.255 280.3)",
+          "oklch(26% 0.255 280.3)",
+          "oklch(38% 0.255 280.3)",
+          "oklch(50% 0.255 280.3)",
+          "oklch(62% 0.255 280.3)",
+          "oklch(74% 0.255 280.3)",
+          "oklch(85% 0.255 280.3)",
+          "oklch(95% 0.255 280.3)"
+        ],
+        "cssVar": "--other"
+      },
+      "attendee": {
+        "role": "primary",
+        "displayName": "참가자 회색",
+        "canonical": "oklch(88.4% 0.007 106.5)",
+        "tonalRamp": [
+          "oklch(15% 0.007 106.5)",
+          "oklch(26% 0.007 106.5)",
+          "oklch(38% 0.007 106.5)",
+          "oklch(50% 0.007 106.5)",
+          "oklch(62% 0.007 106.5)",
+          "oklch(74% 0.007 106.5)",
+          "oklch(85% 0.007 106.5)",
+          "oklch(95% 0.007 106.5)"
+        ],
+        "cssVar": "--attendee"
+      },
+      "match": {
+        "role": "primary",
+        "displayName": "연결 주홍",
+        "canonical": "oklch(66.6% 0.224 34.3)",
+        "tonalRamp": [
+          "oklch(15% 0.224 34.3)",
+          "oklch(26% 0.224 34.3)",
+          "oklch(38% 0.224 34.3)",
+          "oklch(50% 0.224 34.3)",
+          "oklch(62% 0.224 34.3)",
+          "oklch(74% 0.224 34.3)",
+          "oklch(85% 0.224 34.3)",
+          "oklch(95% 0.224 34.3)"
+        ],
+        "cssVar": "--match"
+      },
+      "danger": {
+        "role": "error",
+        "displayName": "경고 빨강",
+        "canonical": "oklch(54.0% 0.198 29.5)",
+        "tonalRamp": [
+          "oklch(15% 0.198 29.5)",
+          "oklch(26% 0.198 29.5)",
+          "oklch(38% 0.198 29.5)",
+          "oklch(50% 0.198 29.5)",
+          "oklch(62% 0.198 29.5)",
+          "oklch(74% 0.198 29.5)",
+          "oklch(85% 0.198 29.5)",
+          "oklch(95% 0.198 29.5)"
+        ],
+        "cssVar": "--danger"
+      },
+      "danger-wash": {
+        "role": "error",
+        "displayName": "경고 바탕",
+        "canonical": "oklch(96.6% 0.017 35.3)",
+        "tonalRamp": [
+          "oklch(15% 0.017 35.3)",
+          "oklch(26% 0.017 35.3)",
+          "oklch(38% 0.017 35.3)",
+          "oklch(50% 0.017 35.3)",
+          "oklch(62% 0.017 35.3)",
+          "oklch(74% 0.017 35.3)",
+          "oklch(85% 0.017 35.3)",
+          "oklch(95% 0.017 35.3)"
+        ],
+        "note": "app.css의 리터럴 값(.alert, .btn.danger:hover). :root 사용자 정의 속성은 없다."
+      },
+      "danger-ink": {
+        "role": "error",
+        "displayName": "경고 글자",
+        "canonical": "oklch(42.5% 0.152 31.0)",
+        "tonalRamp": [
+          "oklch(15% 0.152 31.0)",
+          "oklch(26% 0.152 31.0)",
+          "oklch(38% 0.152 31.0)",
+          "oklch(50% 0.152 31.0)",
+          "oklch(62% 0.152 31.0)",
+          "oklch(74% 0.152 31.0)",
+          "oklch(85% 0.152 31.0)",
+          "oklch(95% 0.152 31.0)"
+        ],
+        "note": "app.css의 리터럴 값(.alert, .btn.danger:hover). :root 사용자 정의 속성은 없다."
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "첫 화면 제목 한 곳. 960px 이상에서 52px."
+      },
+      "projector": {
+        "displayName": "Projector",
+        "purpose": "프로젝터 화면의 행사 이름."
+      },
+      "name": {
+        "displayName": "Name",
+        "purpose": "명찰의 사람 이름. 예시 명찰 28px, 입장 미리보기 30px."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "입장·관리·안내 화면의 방 이름과 제목(.h2)."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "시트와 테이블 위 영역의 소제목(.h3)."
+      },
+      "reason": {
+        "displayName": "Reason",
+        "purpose": "명찰 안의 추천 이유 한 문장."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "기본 본문과 입력칸 글자."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "모든 버튼. 작은 버튼은 14px."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "입력칸 이름, 두 가지 질문의 머리, 내 명찰 버튼."
+      },
+      "band": {
+        "displayName": "Band",
+        "purpose": "명찰 머리띠의 관계 이름."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "첫마디 패널·명찰 뒷면·소개 항목의 작은 이름(ink-3)."
+      },
+      "numeral": {
+        "displayName": "Numeral",
+        "purpose": "관리 화면 통계 숫자."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "참가 코드."
+      }
+    },
+    "shadows": [
+      {
+        "name": "focus-ring",
+        "value": "outline: 2px solid var(--ink); outline-offset: 0; box-shadow: 0 0 0 5px var(--stock)",
+        "purpose": "모든 :focus-visible. 안쪽 잉크, 바깥 흰 용지의 두 겹 링."
+      },
+      {
+        "name": "input-focus",
+        "value": "0 0 0 3px rgba(17, 17, 17, 0.16)",
+        "purpose": "용지 위 입력칸 포커스(테두리는 ink)."
+      },
+      {
+        "name": "input-focus-desk",
+        "value": "0 0 0 3px rgba(243, 243, 240, 0.22)",
+        "purpose": "테이블 위 입력칸 포커스(테두리는 on-table)."
+      },
+      {
+        "name": "inset-stroke",
+        "value": "inset 0 0 0 1.5px currentColor",
+        "purpose": "지우기 버튼의 선. 테이블 위에서는 #4d4d4a."
+      },
+      {
+        "name": "toast-separation",
+        "value": "0 0 0 2px var(--table)",
+        "purpose": "흰 알림을 흰 명찰에서 떼어 놓는 테이블색 링."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(0.2, 0.7, 0.2, 1)",
+        "purpose": "모든 전환과 애니메이션의 곡선(--ease)."
+      },
+      {
+        "name": "state",
+        "value": "0.15s–0.18s var(--ease)",
+        "purpose": "버튼·칩 배경과 글자색, 입력칸 테두리, 꺾쇠 회전."
+      },
+      {
+        "name": "press",
+        "value": "transform 0.12s var(--ease); translateY(1px)",
+        "purpose": "버튼을 누를 때."
+      },
+      {
+        "name": "badge-turn",
+        "value": "0.34s var(--ease); perspective(1100px) rotateY(90deg) → rotateY(0)",
+        "purpose": "새로 서로 연결된 명찰이 한 번 뒤집힌다. 시그니처."
+      },
+      {
+        "name": "back-open",
+        "value": "0.3s var(--ease), 0.3s delay; perspective(700px) rotateX(-90deg) → none; transform-origin 50% 0",
+        "purpose": "뒤집힌 뒤 명찰 뒷면(연락처)이 펼쳐진다."
+      },
+      {
+        "name": "toast-in",
+        "value": "0.24s var(--ease); from translateY(12px), opacity 0",
+        "purpose": "알림 등장."
+      },
+      {
+        "name": "tick",
+        "value": "0.24s var(--ease); from translateY(-0.35em), opacity 0",
+        "purpose": "프로젝터 참가 인원이 바뀔 때."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation: none !important; transition: none !important",
+        "purpose": "prefers-reduced-motion: reduce에서 모두 끈다."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "page-wide",
+        "value": "760px",
+        "purpose": "관리 두 열, 첫 화면 양식 두 열, 위 여백 28px."
+      },
+      {
+        "name": "home-wide",
+        "value": "960px",
+        "purpose": "첫 화면 문구·예시 명찰 두 열, 제목 52px."
+      },
+      {
+        "name": "projector-stack",
+        "value": "max-width: 759px",
+        "purpose": "프로젝터 두 열을 한 열로."
+      }
+    ],
+    "fonts": [
+      {
+        "family": "Wanted Sans Variable",
+        "source": "https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css",
+        "loadedIn": "app/templates/base.html"
+      }
+    ],
+    "icons": [
+      {
+        "name": "i-pin",
+        "use": "찾는 법 위치"
+      },
+      {
+        "name": "i-check",
+        "use": "머리띠의 보냄 표시"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "주 행동. 잉크 바탕 흰 글자, 한 화면에 하나.",
+      "html": "<button class=\"ds-btn ds-btn-primary\" type=\"button\">방 만들고 QR 받기</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 18px; border: 0; border-radius: 12px; font-family: var(--font, \"Wanted Sans Variable\", \"Wanted Sans\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif); font-size: 16px; font-weight: 800; line-height: 1.2; cursor: pointer; transition: background-color .18s cubic-bezier(.2,.7,.2,1), color .18s cubic-bezier(.2,.7,.2,1), transform .12s cubic-bezier(.2,.7,.2,1); } .ds-btn:active { transform: translateY(1px); } .ds-btn:focus-visible { outline: 2px solid var(--ink, #111111); outline-offset: 0; box-shadow: 0 0 0 5px var(--stock, #ffffff); } .ds-btn-primary { background: var(--ink, #111111); color: var(--stock, #ffffff); } .ds-btn-primary:hover { background: #2b2b2b; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "용지 위 보조 행동(복사, 명함 사진으로 채우기, 처음으로).",
+      "html": "<button class=\"ds-btn ds-btn-secondary\" type=\"button\">복사</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 18px; border: 0; border-radius: 12px; font-family: var(--font, \"Wanted Sans Variable\", \"Wanted Sans\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif); font-size: 16px; font-weight: 800; line-height: 1.2; cursor: pointer; transition: background-color .18s cubic-bezier(.2,.7,.2,1), color .18s cubic-bezier(.2,.7,.2,1), transform .12s cubic-bezier(.2,.7,.2,1); } .ds-btn:active { transform: translateY(1px); } .ds-btn:focus-visible { outline: 2px solid var(--ink, #111111); outline-offset: 0; box-shadow: 0 0 0 5px var(--stock, #ffffff); } .ds-btn-secondary { background: var(--stock-2, #f0f0ec); color: var(--ink, #111111); } .ds-btn-secondary:hover { background: #e3e3de; }"
+    },
+    {
+      "name": "Desk Actions",
+      "kind": "button",
+      "refersTo": "button-secondary-desk",
+      "description": "테이블 위 영역의 보조 버튼과 지우기 버튼. 테이블 위에서는 빨강 대신 on-table 글자와 선.",
+      "html": "<div class=\"ds-desk\"><button class=\"ds-btn ds-btn-desk\" type=\"button\">입장 마감</button><button class=\"ds-btn ds-btn-danger\" type=\"button\">방 지우기</button></div>",
+      "css": ".ds-desk { display: flex; flex-wrap: wrap; gap: 10px; padding: 20px; background: var(--table, #131313); border: 1px solid var(--table-line, #333331); border-radius: 14px; } .ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 18px; border: 0; border-radius: 12px; font-family: var(--font, \"Wanted Sans Variable\", \"Wanted Sans\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif); font-size: 16px; font-weight: 800; line-height: 1.2; cursor: pointer; transition: background-color .18s cubic-bezier(.2,.7,.2,1), color .18s cubic-bezier(.2,.7,.2,1), transform .12s cubic-bezier(.2,.7,.2,1); } .ds-btn:active { transform: translateY(1px); } .ds-btn:focus-visible { outline: 2px solid var(--ink, #111111); outline-offset: 0; box-shadow: 0 0 0 5px var(--stock, #ffffff); } .ds-btn-desk { background: #2b2b29; color: var(--on-table, #f3f3f0); } .ds-btn-desk:hover { background: #363634; } .ds-btn-danger { background: transparent; color: var(--on-table, #f3f3f0); box-shadow: inset 0 0 0 1.5px #4d4d4a; } .ds-btn-danger:hover { background: rgba(243, 243, 240, .07); } .ds-btn-danger:focus-visible { box-shadow: inset 0 0 0 1.5px #4d4d4a, 0 0 0 5px var(--stock, #ffffff); }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "흰 용지 위 입력칸. 라벨 14px/800, 보조 표시 13px/600 ink-3.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-label\">현장에서 나를 찾는 법 <span class=\"ds-optional\">모두에게 보여요</span></span><input class=\"ds-input\" placeholder=\"예: 파란 셔츠, 창가 쪽 3번 테이블\"></label>",
+      "css": ".ds-field { display: grid; gap: 8px; max-width: 360px; padding: 20px; background: var(--stock, #ffffff); border-radius: 14px; font-family: var(--font, \"Wanted Sans Variable\", \"Wanted Sans\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif); } .ds-label { font-size: 14px; font-weight: 800; color: var(--ink, #111111); } .ds-optional { margin-left: 4px; font-size: 13px; font-weight: 600; color: var(--ink-3, #6b6b65); } .ds-input { width: 100%; box-sizing: border-box; min-height: 48px; padding: 12px 14px; border: 1.5px solid var(--stock-line, #d6d6d0); border-radius: 10px; background: var(--stock, #ffffff); color: var(--ink, #111111); font: inherit; font-size: 16px; line-height: 1.5; transition: border-color .15s cubic-bezier(.2,.7,.2,1), box-shadow .15s cubic-bezier(.2,.7,.2,1); } .ds-input::placeholder { color: var(--ink-3, #6b6b65); } .ds-input:hover { border-color: #b9b9b2; } .ds-input:focus { outline: none; border-color: var(--ink, #111111); box-shadow: 0 0 0 3px rgba(17, 17, 17, .16); }"
+    },
+    {
+      "name": "Top Bar and Filters",
+      "kind": "nav",
+      "refersTo": "chip",
+      "description": "추천 목록 상단: 워드마크, 방 이름, 내 명찰 버튼, 머리띠색 표시가 달린 필터 칩.",
+      "html": "<div class=\"ds-table\"><div class=\"ds-top\"><div><span class=\"ds-brand\">Meetpoint</span><p class=\"ds-room\">자사몰 창업 특강 네트워킹</p></div><a class=\"ds-me\" href=\"#\">내 명찰</a></div><nav class=\"ds-filters\"><button class=\"ds-chip ds-active\" data-f=\"all\">전체 <span class=\"ds-count\">6</span></button><button class=\"ds-chip\" data-f=\"common\">같은 분야</button><button class=\"ds-chip\" data-f=\"complement\">다른 분야</button><button class=\"ds-chip\" data-f=\"matched\">연결됨</button></nav></div>",
+      "css": ".ds-table { background: var(--table, #131313); color: var(--on-table, #f3f3f0); padding: 20px 16px; font-family: var(--font, \"Wanted Sans Variable\", \"Wanted Sans\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif); } .ds-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; } .ds-brand { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 800; } .ds-brand::before { content: \"\"; width: 12px; height: 16px; border-radius: 3px; background: radial-gradient(circle at 50% 3.5px, var(--table, #131313) 1.6px, transparent 2px), linear-gradient(var(--same, #ffd21f) 0 5px, var(--stock, #ffffff) 5px); } .ds-room { margin: 2px 0 0; font-size: 20px; font-weight: 800; letter-spacing: -.02em; } .ds-me { position: relative; display: inline-flex; align-items: center; min-height: 44px; box-sizing: border-box; padding: 12px 14px 8px; border-radius: 10px; background: linear-gradient(var(--attendee, #d9d9d4) 0 8px, var(--stock, #ffffff) 8px); color: var(--ink, #111111); font-size: 14px; font-weight: 800; text-decoration: none; } .ds-me::before { content: \"\"; position: absolute; top: 3px; left: 50%; width: 18px; height: 4px; margin-left: -9px; border-radius: 2px; background: var(--table, #131313); } .ds-me:hover { background: linear-gradient(var(--attendee, #d9d9d4) 0 8px, #ecece7 8px); } .ds-filters { display: flex; gap: 8px; padding-top: 12px; overflow-x: auto; } .ds-chip { display: inline-flex; flex: none; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--table-raised, #1f1f1f); color: var(--on-table, #f3f3f0); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; transition: background-color .18s cubic-bezier(.2,.7,.2,1), color .18s cubic-bezier(.2,.7,.2,1); } .ds-chip:hover { background: #2a2a28; } .ds-chip.ds-active { background: var(--stock, #ffffff); color: var(--ink, #111111); } .ds-chip:focus-visible, .ds-me:focus-visible { outline: 2px solid var(--ink, #111111); outline-offset: 0; box-shadow: 0 0 0 5px var(--stock, #ffffff); } .ds-chip[data-f=\"common\"]::before, .ds-chip[data-f=\"complement\"]::before, .ds-chip[data-f=\"matched\"]::before { content: \"\"; width: 10px; height: 10px; border-radius: 3px; } .ds-chip[data-f=\"common\"]::before { background: var(--same, #ffd21f); } .ds-chip[data-f=\"complement\"]::before { background: var(--other, #5b3df5); } .ds-chip[data-f=\"matched\"]::before { background: var(--match, #ff4a1c); } .ds-count { opacity: .6; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Person Badge",
+      "kind": "card",
+      "refersTo": "badge",
+      "description": "시그니처. 한 사람 = 명찰 한 장: 관계 머리띠와 슬롯, 큰 이름, 이유, 첫마디, 찾는 법, 만나고 싶어요.",
+      "html": "<article class=\"ds-badge\"><div class=\"ds-band ds-band-complement\"><span>다른 분야 도움</span></div><div class=\"ds-body\"><h2 class=\"ds-name\">김개발</h2><p class=\"ds-headline\">자사몰 창업 준비 · 백엔드 개발자</p><p class=\"ds-reason\">자사몰을 직접 개발하는 백엔드 개발자라 결제 구현 이야기를 나눌 수 있어요.</p><p class=\"ds-opener\"><span class=\"ds-opener-label\">이렇게 말을 걸어보세요</span>“결제 화면 구현 관련해서 개발자 관점의 이야기가 궁금해요.”</p><p class=\"ds-find\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 21s-6.5-5.4-6.5-11a6.5 6.5 0 0 1 13 0c0 5.6-6.5 11-6.5 11z\"/><circle cx=\"12\" cy=\"10\" r=\"2.4\"/></svg><span>찾는 법 <strong>파란 셔츠, 3번 테이블</strong></span></p></div><div class=\"ds-actions\"><button class=\"ds-btn ds-like\" type=\"button\" aria-pressed=\"false\">만나고 싶어요</button></div></article>",
+      "css": ".ds-badge { position: relative; max-width: 390px; background: var(--stock, #ffffff); color: var(--ink, #111111); border-radius: 14px; overflow: hidden; font-family: var(--font, \"Wanted Sans Variable\", \"Wanted Sans\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif); line-height: 1.5; word-break: keep-all; } .ds-band { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 40px; padding: 0 16px; background: var(--attendee, #d9d9d4); color: var(--ink, #111111); font-size: 13px; font-weight: 800; letter-spacing: .01em; } .ds-band::before { content: \"\"; position: absolute; top: 11px; left: 50%; width: 44px; height: 10px; margin-left: -22px; border-radius: 5px; background: var(--table, #131313); } .ds-band-common { background: var(--same, #ffd21f); } .ds-band-complement { background: var(--other, #5b3df5); color: #ffffff; } .ds-band-matched { background: var(--match, #ff4a1c); } .ds-body { padding: 18px 18px 0; } .ds-name { margin: 0; font-size: 34px; line-height: 1.12; font-weight: 800; letter-spacing: -.025em; } .ds-headline { margin: 6px 0 0; font-size: 15px; font-weight: 600; color: var(--ink-2, #4f4f4a); } .ds-reason { margin: 16px 0 0; font-size: 17px; font-weight: 700; } .ds-opener { margin: 12px 0 0; padding: 12px 14px; border-radius: 10px; background: var(--stock-2, #f0f0ec); font-size: 15px; line-height: 1.55; } .ds-opener-label { display: block; margin-bottom: 4px; font-size: 12px; font-weight: 800; color: var(--ink-3, #6b6b65); } .ds-find { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 0; font-size: 15px; color: var(--ink-2, #4f4f4a); } .ds-find .ds-icon { margin-top: 2px; color: var(--ink, #111111); } .ds-find strong { color: var(--ink, #111111); font-weight: 800; } .ds-actions { padding: 12px 18px 18px; } .ds-icon { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; } .ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 18px; border: 0; border-radius: 12px; font-family: var(--font, \"Wanted Sans Variable\", \"Wanted Sans\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif); font-size: 16px; font-weight: 800; line-height: 1.2; cursor: pointer; transition: background-color .18s cubic-bezier(.2,.7,.2,1), color .18s cubic-bezier(.2,.7,.2,1), transform .12s cubic-bezier(.2,.7,.2,1); } .ds-btn:active { transform: translateY(1px); } .ds-btn:focus-visible { outline: 2px solid var(--ink, #111111); outline-offset: 0; box-shadow: 0 0 0 5px var(--stock, #ffffff); } .ds-like { width: 100%; min-height: 52px; background: var(--ink, #111111); color: var(--stock, #ffffff); } .ds-like:hover { background: #2b2b2b; } "
+    },
+    {
+      "name": "Matched Badge",
+      "kind": "card",
+      "refersTo": "badge-back",
+      "description": "서로 연결된 명찰. 주홍 머리띠와 버튼, 절취선 아래 연락처 뒷면. 연결 순간 한 번 뒤집힌다.",
+      "html": "<article class=\"ds-badge ds-turn\"><div class=\"ds-band ds-band-matched\"><span>서로 연결</span></div><div class=\"ds-body\"><h2 class=\"ds-name\">문피엠</h2><p class=\"ds-headline\">커머스 PM</p><p class=\"ds-find\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 21s-6.5-5.4-6.5-11a6.5 6.5 0 0 1 13 0c0 5.6-6.5 11-6.5 11z\"/><circle cx=\"12\" cy=\"10\" r=\"2.4\"/></svg><span>찾는 법 <strong>회색 후드, 2번 테이블</strong></span></p></div><div class=\"ds-actions\"><button class=\"ds-btn ds-like ds-matched\" type=\"button\" aria-pressed=\"true\">서로 만나고 싶어해요</button></div><div class=\"ds-back\"><span class=\"ds-back-label\">연락처</span><span class=\"ds-back-value\">pm@example.com</span></div></article>",
+      "css": ".ds-badge { position: relative; max-width: 390px; background: var(--stock, #ffffff); color: var(--ink, #111111); border-radius: 14px; overflow: hidden; font-family: var(--font, \"Wanted Sans Variable\", \"Wanted Sans\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif); line-height: 1.5; word-break: keep-all; } .ds-band { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 40px; padding: 0 16px; background: var(--attendee, #d9d9d4); color: var(--ink, #111111); font-size: 13px; font-weight: 800; letter-spacing: .01em; } .ds-band::before { content: \"\"; position: absolute; top: 11px; left: 50%; width: 44px; height: 10px; margin-left: -22px; border-radius: 5px; background: var(--table, #131313); } .ds-band-common { background: var(--same, #ffd21f); } .ds-band-complement { background: var(--other, #5b3df5); color: #ffffff; } .ds-band-matched { background: var(--match, #ff4a1c); } .ds-body { padding: 18px 18px 0; } .ds-name { margin: 0; font-size: 34px; line-height: 1.12; font-weight: 800; letter-spacing: -.025em; } .ds-headline { margin: 6px 0 0; font-size: 15px; font-weight: 600; color: var(--ink-2, #4f4f4a); } .ds-reason { margin: 16px 0 0; font-size: 17px; font-weight: 700; } .ds-opener { margin: 12px 0 0; padding: 12px 14px; border-radius: 10px; background: var(--stock-2, #f0f0ec); font-size: 15px; line-height: 1.55; } .ds-opener-label { display: block; margin-bottom: 4px; font-size: 12px; font-weight: 800; color: var(--ink-3, #6b6b65); } .ds-find { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 0; font-size: 15px; color: var(--ink-2, #4f4f4a); } .ds-find .ds-icon { margin-top: 2px; color: var(--ink, #111111); } .ds-find strong { color: var(--ink, #111111); font-weight: 800; } .ds-actions { padding: 12px 18px 18px; } .ds-icon { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; } .ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 18px; border: 0; border-radius: 12px; font-family: var(--font, \"Wanted Sans Variable\", \"Wanted Sans\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif); font-size: 16px; font-weight: 800; line-height: 1.2; cursor: pointer; transition: background-color .18s cubic-bezier(.2,.7,.2,1), color .18s cubic-bezier(.2,.7,.2,1), transform .12s cubic-bezier(.2,.7,.2,1); } .ds-btn:active { transform: translateY(1px); } .ds-btn:focus-visible { outline: 2px solid var(--ink, #111111); outline-offset: 0; box-shadow: 0 0 0 5px var(--stock, #ffffff); } .ds-like { width: 100%; min-height: 52px; background: var(--ink, #111111); color: var(--stock, #ffffff); } .ds-like:hover { background: #2b2b2b; } .ds-like.ds-matched { background: var(--match, #ff4a1c); color: var(--ink, #111111); } .ds-like.ds-matched:hover { background: #ff6440; } .ds-back { display: grid; gap: 4px; padding: 16px 18px 18px; border-top: 2px dashed var(--stock-line, #d6d6d0); background: var(--stock-2, #f0f0ec); } .ds-back-label { font-size: 12px; font-weight: 800; color: var(--ink-3, #6b6b65); } .ds-back-value { font-size: 18px; font-weight: 800; overflow-wrap: anywhere; } .ds-turn { animation: ds-badge-turn .34s cubic-bezier(.2,.7,.2,1) both; backface-visibility: hidden; } .ds-turn .ds-back { animation: ds-back-open .3s cubic-bezier(.2,.7,.2,1) .3s both; transform-origin: 50% 0; } @keyframes ds-badge-turn { from { transform: perspective(1100px) rotateY(90deg); } to { transform: perspective(1100px) rotateY(0); } } @keyframes ds-back-open { from { transform: perspective(700px) rotateX(-90deg); opacity: 0; } to { transform: none; opacity: 1; } } @media (prefers-reduced-motion: reduce) { .ds-turn, .ds-turn .ds-back { animation: none; } }"
+    },
+    {
+      "name": "Ask Fields",
+      "kind": "input",
+      "refersTo": "ask-common-title",
+      "description": "입장 양식의 두 가지 만남. 명찰 머리띠와 같은 노랑·보라 머리를 단 입력칸.",
+      "html": "<fieldset class=\"ds-asks\"><label class=\"ds-ask ds-common\"><span class=\"ds-ask-title\">같은 분야 고수에게 묻고 싶은 것</span><textarea rows=\"2\" placeholder=\"예: 카페24로 할지 직접 만들지 고민이에요\"></textarea></label><label class=\"ds-ask ds-complement\"><span class=\"ds-ask-title\">다른 분야에서 필요한 것</span><textarea rows=\"2\" placeholder=\"예: 광고·SNS 마케터와 이야기하고 싶어요\"></textarea></label></fieldset>",
+      "css": ".ds-asks { display: grid; gap: 12px; max-width: 360px; margin: 0; padding: 20px; border: 0; background: var(--stock, #ffffff); border-radius: 14px; font-family: var(--font, \"Wanted Sans Variable\", \"Wanted Sans\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif); } .ds-ask { display: grid; border-radius: 12px; overflow: hidden; background: var(--stock-2, #f0f0ec); } .ds-ask-title { padding: 10px 14px; font-size: 14px; font-weight: 800; } .ds-common .ds-ask-title { background: var(--same, #ffd21f); color: var(--ink, #111111); } .ds-complement .ds-ask-title { background: var(--other, #5b3df5); color: #ffffff; } .ds-ask textarea { min-height: 76px; padding: 12px 14px; border: 0; background: var(--stock-2, #f0f0ec); color: var(--ink, #111111); font: inherit; font-size: 16px; resize: vertical; } .ds-ask textarea::placeholder { color: var(--ink-3, #6b6b65); } .ds-ask textarea:focus { outline: none; box-shadow: inset 0 0 0 2px var(--ink, #111111); }"
+    },
+    {
+      "name": "Match Toast",
+      "kind": "custom",
+      "refersTo": "toast-match",
+      "description": "서로 연결 알림. 화면 아래 고정, 주홍 바탕, 8초. 일반 알림은 흰 용지에 4초.",
+      "html": "<div class=\"ds-table\"><div class=\"ds-toast ds-toast-match\" role=\"status\"><strong>문피엠님도 만나고 싶어해요</strong>찾는 법과 연락처를 확인해 보세요.</div></div>",
+      "css": ".ds-table { background: var(--table, #131313); color: var(--on-table, #f3f3f0); padding: 20px 16px; font-family: var(--font, \"Wanted Sans Variable\", \"Wanted Sans\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif); } .ds-toast { max-width: 520px; padding: 14px 16px; border-radius: 12px; background: var(--stock, #ffffff); color: var(--ink, #111111); font-size: 15px; box-shadow: 0 0 0 2px var(--table, #131313); animation: ds-toast-in .24s cubic-bezier(.2,.7,.2,1) both; } .ds-toast strong { display: block; font-size: 16px; font-weight: 800; } .ds-toast-match { background: var(--match, #ff4a1c); } @keyframes ds-toast-in { from { transform: translateY(12px); opacity: 0; } } @media (prefers-reduced-motion: reduce) { .ds-toast { animation: none; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "등록 데스크 위의 명찰",
+    "overview": "Meetpoint의 모든 화면은 행사장 등록 데스크다. 바탕은 검정 테이블보이고, 그 위에 흰 명찰 용지가 놓인다. 한 사람은 명찰 한 장이다. 이름은 멀리서도 읽힐 만큼 크고, 명찰 머리의 인쇄 띠 색이 그 사람과 나의 관계를 알려 준다. 찾는 법은 안내문처럼 적혀 있다. 테이블에서 한 손으로 명찰을 훑고, 누구에게 갈지 정하고, 바로 걸어가는 흐름을 위한 세계다.\n\n화면은 두 재질로만 이루어진다. 검정 테이블(어두운 면, 테두리만 있는 영역)과 흰 용지(명찰, 양식 시트)다. 깊이는 그림자가 아니라 두 재질의 명도 차이에서 나온다. 색은 거의 없다. 노랑·보라·회색·주홍의 인쇄 머리띠 4색이 관계와 연결 상태를 말할 때만 나오고, 나머지는 잉크와 용지의 무채색이다. 글꼴은 Wanted Sans 한 가족이며 굵기 800의 큰 글자로 위계를 세운다. 흰 카드, 파란 버튼, 작은 파스텔 태그로 된 SaaS 목록과는 다른 쪽을 택했다.\n\n움직임은 한 번의 사건에 모았다. 서로 연결되는 순간 명찰이 한 번 뒤집히고, 뒷면(연락처)이 아래로 펼쳐진다. 그 밖의 움직임은 짧은 상태 전환뿐이고, 동작 줄이기 설정에서는 모두 꺼진다. 라이트 모드는 없다. 테이블은 언제나 검정이다(`color-scheme: dark`, `theme-color` #131313).",
+    "keyCharacteristics": [
+      "검정 테이블(#131313) 위 흰 명찰 용지(#ffffff), 그림자 없는 명도 대비",
+      "명찰 머리의 40px 인쇄 띠와 가운데 뚫린 목걸이 슬롯",
+      "관계와 연결 상태에만 쓰는 머리띠 4색",
+      "Wanted Sans Variable 한 가족, 이름과 제목은 800 굵기",
+      "주 행동은 잉크 버튼, 색 있는 CTA 없음",
+      "서로 연결될 때 한 번 뒤집히는 명찰이 유일한 연출"
+    ],
+    "rules": [
+      {
+        "name": "The Headband Rule",
+        "body": "머리띠 4색은 관계와 연결 상태를 말할 때만 쓴다: 명찰 머리띠, 필터 칩의 색 표시, 두 가지 질문의 머리, 범례 견본, 연결된 뒤의 버튼과 알림. 예외는 명찰 모양 워드마크와 파비콘의 노란 띠 하나다. 링크, 아이콘, 장식 배경, 일반 버튼에는 쓰지 않는다. (현재 \"추천 이유를 만들고 있어요\" 상태 줄의 노란 점은 이 규칙에서 벗어나 있다.)",
+        "section": "colors"
+      },
+      {
+        "name": "The Ink Action Rule",
+        "body": "주 행동은 잉크 바탕(#111111)에 흰 글자인 버튼이다. 색으로 부르는 CTA는 없다. 버튼이 색을 띠는 경우는 서로 연결된 상태를 보여 주는 주홍 만나고 싶어요 버튼 하나뿐이다.",
+        "section": "colors"
+      },
+      {
+        "name": "The Table and Stock Rule",
+        "body": "화면의 모든 것은 검정 테이블 위에 있거나 흰 용지 위에 있다. 테이블 위 영역은 채우지 않고 1px 선으로만 두르며, 컨트롤만 table-raised 한 단으로 올린다. 회색 카드 층을 새로 만들지 않는다.",
+        "section": "colors"
+      },
+      {
+        "name": "The Name First Rule",
+        "body": "명찰 안에서 가장 큰 글자는 이름이다(34px/800). 추천 목록 화면에서는 방 이름(20px)보다도 크다. 이유, 첫마디, 찾는 법은 이름 아래로 한 단씩 작아진다.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Family Rule",
+        "body": "Wanted Sans Variable 한 가족만 쓴다. 위계는 크기와 굵기로 만들고, 두 번째 글꼴이나 기울임은 들이지 않는다.",
+        "section": "typography"
+      },
+      {
+        "name": "The Fixed Digits Rule",
+        "body": "참가 코드, 참가자 수, 연결 수처럼 바뀌는 숫자는 `font-variant-numeric: tabular-nums`로 자리를 고정한다.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Drop Shadow Rule",
+        "body": "번지는 그림자, 글로우, 오프셋 그림자를 쓰지 않는다. 한 면을 앞으로 보이게 하려면 테이블 대 용지의 명도 차이를 쓴다.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Punched Slot Rule",
+        "body": "명찰 형식을 쓰는 곳에는 반드시 머리띠와 가운데 슬롯이 함께 있다. 슬롯은 언제나 테이블색(#131313)이고, 띠 위 글자는 왼쪽에 둔다.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do 한 사람은 명찰 한 장으로 보여 준다: 흰 용지(stock), 14px 모서리, 40px 머리띠와 가운데 슬롯, 34px/800 이름.",
+      "Do 관계는 명찰 머리 전체 폭의 띠 색으로 알린다. 보라 띠에만 흰 글자를 올리고, 노랑·주홍·회색 띠에는 잉크 글자를 올린다.",
+      "Do 주 행동은 잉크 버튼 하나로 둔다. 높이는 48px 이상, 만나고 싶어요는 52px 전체 폭이다.",
+      "Do 테이블 위 영역은 채우지 않고 1px table-line 선으로만 두른다. 컨트롤만 table-raised로 한 단 올린다.",
+      "Do 포커스는 두 겹 링(2px 잉크 outline + 5px 흰 링)으로 둔다. 자체 안쪽 선이 있는 버튼도 흰 바깥 링을 유지한다.",
+      "Do 상태 전환은 0.15~0.18s, `--ease`(cubic-bezier(0.2, 0.7, 0.2, 1))로 짧게 한다. 뒤집기는 서로 연결되는 순간에만 쓰고, `prefers-reduced-motion: reduce`에서는 모든 애니메이션과 전환을 끈다.",
+      "Do 바뀌는 숫자와 참가 코드는 tabular-nums로 자리를 고정한다."
+    ],
+    "donts": [
+      "Don't 머리띠 4색(same, other, match, attendee)을 링크, 아이콘, 장식 배경, 일반 버튼에 쓰지 않는다. 명찰 모양 워드마크의 노란 띠만 예외다.",
+      "Don't 흰 카드에 파란 버튼, 작은 파스텔 태그를 단 SaaS 목록으로 사람을 보여 주지 않는다.",
+      "Don't 번지는 그림자, 글로우, 오프셋 그림자, 부드러운 그라데이션 면을 쓰지 않는다. 띠를 그리는 하드 스톱 `linear-gradient`만 쓴다.",
+      "Don't Wanted Sans 말고 다른 글꼴 가족이나 시스템 디스플레이 서체를 제목에 쓰지 않는다.",
+      "Don't 제목 위에 작은 분류 라벨(키커, 아이브로)을 달지 않는다. 제목 위에는 워드마크만 온다.",
+      "Don't 유니코드 글리프나 이모지를 아이콘 대신 쓰지 않는다. 아이콘은 base.html의 SVG 심볼로 그린다.",
+      "Don't 경고 빨강(danger)을 검정 테이블 위 글자로 쓰지 않는다(대비 3.3:1). 테이블 위 지우기 버튼은 on-table 글자와 선으로 둔다."
+    ]
+  }
+}
