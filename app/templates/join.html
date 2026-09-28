@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ room.name }} · Meetpoint{% endblock %}
+{% block body %}
+<main class="page narrow">
+  <header class="room-head">
+    <span class="brand">Meetpoint</span>
+    <h1 class="h2">{{ room.name }}</h1>
+    {% if room.description %}<p class="muted">{{ room.description }}</p>{% endif %}
+  </header>
+
+  {% if left %}<p class="notice">내 정보를 이 방에서 지웠어요.</p>{% endif %}
+
+  <section class="card">
+    {% if mode == "edit" %}
+      <h2 class="h3">내 정보 고치기</h2>
+      <p class="muted small">소개나 묻고 싶은 것을 바꾸면 추천을 다시 계산해요.</p>
+    {% else %}
+      <h2 class="h3">2분만 적어주세요</h2>
+      <p class="muted small">자기소개를 대신 해줄 카드예요. 적은 내용으로 오늘 만나면 좋을 사람을 찾아드려요.</p>
+    {% endif %}
+
+    {% if errors %}
+      <div class="alert" role="alert">
+        {% for e in errors %}<p>{{ e }}</p>{% endfor %}
+      </div>
+    {% endif %}
+
+    {% if ai_enabled %}
+    <div class="card-scan" id="card-scan">
+      <label class="btn secondary block" for="card-file">명함 사진으로 채우기</label>
+      <input id="card-file" type="file" accept="image/*" capture="environment" hidden>
+      <p class="hint" id="card-status">사진은 저장하지 않아요. 글자만 읽어서 아래 칸을 채워요.</p>
+    </div>
+    {% endif %}
+
+    <form method="post" action="/r/{{ room.code }}/{{ 'me' if mode == 'edit' else 'join' }}" class="form" id="profile-form">
+      <label class="field">
+        <span class="label">이름</span>
+        <input name="name" required maxlength="30" autocomplete="name" placeholder="홍길동" value="{{ values.name or '' }}">
+      </label>
+      <label class="field">
+        <span class="label">한 줄 소개 <span class="optional">선택</span></span>
+        <input name="headline" maxlength="60" placeholder="예: 자사몰 창업 준비 · 백엔드 개발자" value="{{ values.headline or '' }}">
+      </label>
+      <label class="field">
+        <span class="label">자기소개</span>
+        <textarea name="about" required rows="3" maxlength="400" placeholder="예: 자사몰을 직접 개발하고 있어요. 서버와 배포는 해봤어요.">{{ values.about or '' }}</textarea>
+      </label>
+
+      <fieldset class="asks">
+        <legend class="label">오늘 누구를 만나고 싶나요? <span class="optional">하나 이상</span></legend>
+        <label class="field ask common">
+          <span class="ask-title">같은 분야 고수에게 묻고 싶은 것</span>
+          <textarea name="ask_same" rows="2" maxlength="300" placeholder="예: 카페24로 할지 직접 만들지 고민이에요">{{ values.ask_same or '' }}</textarea>
+        </label>
+        <label class="field ask complement">
+          <span class="ask-title">다른 분야에서 필요한 것</span>
+          <textarea name="ask_other" rows="2" maxlength="300" placeholder="예: 마케팅이 걱정이라 광고·SNS 마케터와 이야기하고 싶어요">{{ values.ask_other or '' }}</textarea>
+        </label>
+      </fieldset>
+
+      <label class="field">
+        <span class="label">현장에서 나를 찾는 법 <span class="optional">모두에게 보여요</span></span>
+        <input name="find_me" maxlength="60" placeholder="예: 파란 셔츠, 창가 쪽 3번 테이블" value="{{ values.find_me or '' }}">
+      </label>
+      <label class="field">
+        <span class="label">연락처 <span class="optional">서로 만나고 싶어요를 누른 사람에게만 보여요</span></span>
+        <input name="contact" maxlength="100" placeholder="이메일, 카카오톡 ID, 링크드인 주소 등" value="{{ values.contact or '' }}">
+      </label>
+
+      <button class="btn primary" type="submit">{{ '저장하기' if mode == 'edit' else '입장하기' }}</button>
+      {% if mode == "edit" %}<a class="btn ghost" href="/r/{{ room.code }}">돌아가기</a>{% endif %}
+    </form>
+    <p class="hint">적은 내용은 이 방 참가자에게 보이고, 방을 만든 지 30일이 지나면 모두 지워져요. 추천을 위해 AI가 소개 내용을 읽어요.</p>
+  </section>
+
+  {% if mode == "edit" %}
+  <section class="card subtle">
+    <h2 class="h3">이 방에서 나가기</h2>
+    <p class="muted small">내 소개와 추천, 연결 기록을 바로 지워요.</p>
+    <form method="post" action="/r/{{ room.code }}/leave" onsubmit="return confirm('내 정보를 이 방에서 모두 지울까요?')">
+      <button class="btn danger" type="submit">내 정보 지우기</button>
+    </form>
+  </section>
+  {% endif %}
+</main>
+{% endblock %}
+{% block scripts %}
+{% if ai_enabled %}<script src="/static/join.js?v=1" data-code="{{ room.code }}" defer></script>{% endif %}
+{% endblock %}

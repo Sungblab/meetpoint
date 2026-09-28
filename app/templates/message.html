@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} · Meetpoint{% endblock %}
+{% block body %}
+<main class="page narrow center-page">
+  <a class="brand" href="/">Meetpoint</a>
+  <section class="card">
+    <h1 class="h2">{{ title }}</h1>
+    <p class="muted">{{ body }}</p>
+    <a class="btn secondary" href="/">처음으로</a>
+  </section>
+</main>
+{% endblock %}

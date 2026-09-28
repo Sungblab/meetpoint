@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}관리 · {{ room.name }}{% endblock %}
+{% block body %}
+<main class="page" id="host" data-token="{{ token }}">
+  <header class="room-head">
+    <span class="brand">Meetpoint 관리</span>
+    <h1 class="h2">{{ room.name }}</h1>
+  </header>
+
+  <section class="card warn">
+    <h2 class="h3">이 관리 주소를 저장해 두세요</h2>
+    <p class="muted small">잃어버리면 이 화면에 다시 들어올 수 없어요. 참가자에게는 보여주지 마세요.</p>
+    <div class="copy-row">
+      <input readonly value="{{ host_url }}" id="host-url" aria-label="관리 주소">
+      <button class="btn secondary" data-copy="host-url">복사</button>
+    </div>
+  </section>
+
+  <div class="host-grid">
+    <section class="card qr-card">
+      <h2 class="h3">참가 QR</h2>
+      <div class="qr">{{ qr | safe }}</div>
+      <p class="code-line">참가 코드 <strong>{{ room.code }}</strong></p>
+      <div class="copy-row">
+        <input readonly value="{{ join_url }}" id="join-url" aria-label="참가 주소">
+        <button class="btn secondary" data-copy="join-url">복사</button>
+      </div>
+      <a class="btn primary block" href="{{ screen_url }}" target="_blank" rel="noopener">프로젝터 화면 열기</a>
+    </section>
+
+    <section class="card">
+      <h2 class="h3">지금 현황</h2>
+      <dl class="stats">
+        <div><dt>참가자</dt><dd id="stat-participants">-</dd></div>
+        <div><dt>서로 연결</dt><dd id="stat-matches">-</dd></div>
+        <div><dt>추천 계산 중</dt><dd id="stat-pending">-</dd></div>
+      </dl>
+      {% if not ai_enabled %}<p class="hint">AI 키가 없어 키워드 기반으로 추천하고 있어요.</p>{% endif %}
+      <h3 class="label host-list-title">최근 들어온 사람</h3>
+      <ul class="people-mini" id="people-mini"><li class="muted">아직 없어요</li></ul>
+    </section>
+  </div>
+
+  <section class="card subtle">
+    <h2 class="h3">방 관리</h2>
+    <div class="actions">
+      {% if room.is_closed %}
+      <form method="post" action="/h/{{ token }}/reopen"><button class="btn secondary" type="submit">입장 다시 열기</button></form>
+      <p class="muted small">입장이 마감됐어요. 이미 들어온 사람은 계속 쓸 수 있어요.</p>
+      {% else %}
+      <form method="post" action="/h/{{ token }}/close"><button class="btn secondary" type="submit">입장 마감</button></form>
+      {% endif %}
+      <form method="post" action="/h/{{ token }}/delete" onsubmit="return confirm('방과 참가자 정보를 모두 지울까요? 되돌릴 수 없어요.')">
+        <button class="btn danger" type="submit">방 지우기</button>
+      </form>
+    </div>
+  </section>
+</main>
+{% endblock %}
+{% block scripts %}<script src="/static/dom.js?v=1" defer></script><script src="/static/host.js?v=1" defer></script>{% endblock %}

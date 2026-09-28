@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ room.name }} · 참가 QR{% endblock %}
+{% block body_class %}screen{% endblock %}
+{% block body %}
+<main class="screen-wrap" id="screen" data-code="{{ room.code }}">
+  <div class="screen-text">
+    <span class="brand">Meetpoint</span>
+    <h1>{{ room.name }}</h1>
+    <p class="screen-lead">QR을 찍고 2분만 적어주세요.<br>오늘 만나면 좋을 사람을 찾아드려요.</p>
+    <p class="screen-code">코드 <strong>{{ room.code }}</strong></p>
+    <p class="screen-count"><strong id="screen-count">{{ count }}</strong>명 참가 중</p>
+  </div>
+  <div class="screen-qr qr">{{ qr | safe }}</div>
+</main>
+{% endblock %}
+{% block scripts %}<script src="/static/screen.js?v=1" defer></script>{% endblock %}

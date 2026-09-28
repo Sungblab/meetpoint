@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ room.name }} · Meetpoint{% endblock %}
+{% block body %}
+<main class="page" id="app" data-code="{{ room.code }}">
+  <header class="topbar">
+    <div class="topbar-text">
+      <span class="brand small">Meetpoint</span>
+      <h1 class="h3 room-name">{{ room.name }}</h1>
+    </div>
+    <a class="btn ghost small" href="/r/{{ room.code }}/me">내 정보</a>
+  </header>
+
+  <div class="status" id="status" hidden></div>
+
+  <nav class="filters" role="tablist" aria-label="보기">
+    <button class="chip active" data-filter="all" role="tab" aria-selected="true">전체 <span class="count" data-count="all"></span></button>
+    <button class="chip" data-filter="common" role="tab" aria-selected="false">같은 분야</button>
+    <button class="chip" data-filter="complement" role="tab" aria-selected="false">다른 분야</button>
+    <button class="chip" data-filter="matched" role="tab" aria-selected="false">연결됨 <span class="count" data-count="matched"></span></button>
+  </nav>
+
+  <section id="list" class="list" aria-live="polite">
+    <p class="empty">불러오는 중…</p>
+  </section>
+
+  <div class="toast-area" id="toasts" aria-live="assertive"></div>
+</main>
+{% endblock %}
+{% block scripts %}<script src="/static/dom.js?v=1" defer></script><script src="/static/room.js?v=1" defer></script>{% endblock %}
