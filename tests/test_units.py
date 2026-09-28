@@ -97,5 +97,5 @@ def test_purge_expired_rooms(tmp_path):
 
 
 def test_settings_ai_enabled():
-    assert not Settings(_env_file=None, anthropic_api_key="").ai_enabled
-    assert Settings(_env_file=None, anthropic_api_key="k").ai_enabled
+    assert not Settings(_env_file=None, gemini_api_key="").ai_enabled
+    assert Settings(_env_file=None, gemini_api_key="k").ai_enabled

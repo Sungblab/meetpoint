@@ -12,13 +12,12 @@ class Settings(BaseSettings):
     # QR과 공유 링크에 쓸 공개 주소. 비워두면 요청 주소를 그대로 쓴다.
     public_base_url: str = ""
 
-    anthropic_api_key: str = ""
-    ai_model: str = "claude-opus-5"
-    # 현장에서는 기다리는 시간이 중요해서 낮게 둔다. 이유의 질이 아쉬우면 medium으로 올린다.
+    gemini_api_key: str = ""
+    ai_model: str = "gemini-3.8-flash"
+    # Gemini thinking_level(minimal, low, medium, high). 현장에서는 기다리는 시간이 중요해서 낮게 둔다.
+    # 이유의 질이 아쉬우면 medium으로 올린다.
     ai_effort: str = "low"
     ai_card_effort: str = "low"
-    # 안전 분류기가 요청을 거절하면 서버에서 다른 모델로 다시 실행한다.
-    ai_fallbacks: bool = True
     ai_batch_size: int = 20
     ai_concurrency: int = 6
     ai_timeout_seconds: float = 90.0
@@ -32,7 +31,7 @@ class Settings(BaseSettings):
 
     @property
     def ai_enabled(self) -> bool:
-        return bool(self.anthropic_api_key)
+        return bool(self.gemini_api_key)
 
 
 @lru_cache

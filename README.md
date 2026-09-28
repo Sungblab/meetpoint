@@ -31,12 +31,11 @@
 
 새 참가자가 들어오거나 소개를 고치면, 그 사람과 방의 나머지 모두를 **양방향으로 한 번에** 평가합니다. 후보 20명을 한 묶음으로 보내므로 50명 방에서도 입장당 호출은 3번 이하입니다.
 
-- **AI 추천.** `ANTHROPIC_API_KEY`가 있으면 Claude가 관계 종류, 점수, 한 문장 이유, 첫마디를 만듭니다. 기본 모델은 `claude-opus-5`이고, 현장에서 기다리는 시간을 줄이려고 추론 강도는 `low`로 둡니다. 응답은 JSON 스키마로 강제하고 서버에서 한 번 더 검증합니다.
-- **거절 대비.** 안전 분류기가 요청을 거절하면 서버에서 다른 모델로 다시 실행하도록 `fallbacks: "default"`를 켜 두었습니다. `AI_FALLBACKS=false`로 끌 수 있습니다.
+- **AI 추천.** `GEMINI_API_KEY`가 있으면 Gemini가 관계 종류, 점수, 한 문장 이유, 첫마디를 만듭니다. 기본 모델은 `gemini-3.8-flash`이고, 현장에서 기다리는 시간을 줄이려고 thinking level은 `low`로 둡니다. 응답은 JSON 스키마로 강제하고 서버에서 한 번 더 검증합니다.
 - **키워드 대체 추천.** AI 키가 없거나, 호출이 실패하거나, 응답이 이상하면 그 묶음은 키워드 비교로 추천합니다. 한국어 조사를 고려해 두 글자 조각으로 비교합니다. 추천이 비어 있는 일은 없습니다.
 - **목록에서 지우지 않습니다.** 연결점이 없어도 목록 아래쪽에 남깁니다. 추천 이유가 틀릴 수 있으니 판단은 사람이 합니다.
 
-명함 사진은 브라우저에서 줄인 뒤 Claude가 글자만 읽고 버립니다. 서버에 저장하지 않습니다.
+명함 사진은 브라우저에서 줄인 뒤 Gemini가 글자만 읽고 버립니다. 서버에 저장하지 않습니다.
 
 ## 개인정보
 
@@ -44,6 +43,7 @@
 - 방은 만든 지 30일이 지나면 참가자, 추천, 연결 기록과 함께 자동으로 지워집니다. `ROOM_RETENTION_DAYS`로 바꿉니다.
 - 참가자는 언제든 "내 정보 지우기"로, 주최자는 "방 지우기"로 바로 지울 수 있습니다.
 - 백업 스크립트는 덤프를 7일간 보관하므로, 지운 데이터가 백업에는 최대 7일 남습니다.
+- 참가자가 적은 내용과 명함 사진은 추천을 위해 Gemini API로 보냅니다. 무료 등급 키는 Google이 입력을 서비스 개선에 쓸 수 있으니, 실제 행사에는 결제가 연결된 프로젝트의 키를 씁니다.
 
 ## 로컬에서 실행
 
@@ -51,7 +51,7 @@ Python 3.12와 [uv](https://docs.astral.sh/uv/)가 필요합니다. 기본 DB는
 
 ```bash
 uv sync
-cp .env.example .env   # ANTHROPIC_API_KEY만 채워도 됩니다. 비워도 동작합니다.
+cp .env.example .env   # GEMINI_API_KEY만 채워도 됩니다. 비워도 동작합니다.
 uv run uvicorn --factory app.main:create_app --reload --port 8000
 ```
 
@@ -80,7 +80,7 @@ cd ~/apps/meetpoint
 
 # 2. 설정
 cp .env.example .env
-nano .env   # POSTGRES_PASSWORD, ANTHROPIC_API_KEY, PUBLIC_BASE_URL, APP_PORT
+nano .env   # POSTGRES_PASSWORD, GEMINI_API_KEY, PUBLIC_BASE_URL, APP_PORT
 
 # 3. 실행
 docker compose up -d --build --wait
@@ -112,15 +112,15 @@ sudo certbot --nginx -d meetpoint.example.com
 
 | 설정 | 기본값 | 설명 |
 | --- | --- | --- |
-| `AI_MODEL` | `claude-opus-5` | 추천과 명함 읽기에 쓰는 모델 |
-| `AI_EFFORT` | `low` | 추천의 추론 강도. 이유의 질이 아쉬우면 `medium`으로 올립니다 |
-| `AI_CARD_EFFORT` | `low` | 명함 읽기의 추론 강도 |
+| `AI_MODEL` | `gemini-3.8-flash` | 추천과 명함 읽기에 쓰는 모델 |
+| `AI_EFFORT` | `low` | 추천의 thinking level(`minimal`, `low`, `medium`, `high`). 이유의 질이 아쉬우면 `medium`으로 올립니다 |
+| `AI_CARD_EFFORT` | `low` | 명함 읽기의 thinking level |
 | `AI_BATCH_SIZE` | `20` | 한 번에 평가할 후보 수 |
 | `AI_CONCURRENCY` | `6` | 동시에 보내는 AI 요청 수 |
 
-호출 수는 인원의 제곱에 비례해 늘어납니다. 모든 쌍을 한 번씩 평가하므로 100명이 차례로 들어오면 약 300번, 300명이면 약 2,400번 호출합니다. 첫 행사에서 Anthropic 콘솔의 사용량을 보고 모델과 추론 강도를 정하세요.
+호출 수는 인원의 제곱에 비례해 늘어납니다. 모든 쌍을 한 번씩 평가하므로 100명이 차례로 들어오면 약 300번, 300명이면 약 2,400번 호출합니다. 첫 행사에서 Google AI Studio의 사용량과 요청 한도를 보고 모델과 thinking level을 정하세요. 한도를 넘어 실패한 묶음은 키워드 추천으로 채워집니다.
 
-`AI_MODEL=claude-haiku-4-5`처럼 Haiku를 쓰면 추론 강도와 거절 대비 설정은 자동으로 빠집니다. 모델을 바꾼 뒤에는 추천 이유의 질을 실제 입력으로 확인해 보세요.
+thinking level을 받지 않는 `gemini-2.5-flash` 같은 모델을 쓰려면 `AI_EFFORT=`와 `AI_CARD_EFFORT=`를 비워 둡니다. 모델을 바꾼 뒤에는 추천 이유의 질을 실제 입력으로 확인해 보세요.
 
 ## 구조
 
@@ -133,7 +133,7 @@ app/
   routes/pages.py    입장, 내 정보, 명함 읽기, 프로젝터 화면
   routes/api.py      방 상태, 만나고 싶어요, SSE
   routes/host.py     주최자 화면
-  matching/ai.py     Claude 호출과 응답 검증
+  matching/ai.py     Gemini 호출과 응답 검증
   matching/heuristic.py  키워드 대체 추천
   matching/service.py    추천 작업 실행과 저장
   templates/, static/    화면

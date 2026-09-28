@@ -56,7 +56,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         await db.create_all()
         await purge_once()
         if not settings.ai_enabled:
-            log.warning("ANTHROPIC_API_KEY가 없어 키워드 기반 추천만 사용합니다. 명함 읽기는 꺼집니다.")
+            log.warning("GEMINI_API_KEY가 없어 키워드 기반 추천만 사용합니다. 명함 읽기는 꺼집니다.")
         purge = asyncio.create_task(purge_loop())
         try:
             yield

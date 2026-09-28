@@ -1,39 +1,42 @@
 import asyncio
 from types import SimpleNamespace
 
+import httpx
 import pytest
+from google.genai import errors, types
 
 from app.config import Settings
-from app.matching.ai import FALLBACK_BETA, AIClient, AIUnavailable, parse_recommendations
-from app.matching.schemas import CardOut, PairResult, Profile
+from app.matching.ai import AIClient, AIUnavailable, parse_recommendations
+from app.matching.schemas import RECOMMENDATION_SCHEMA, CardOut, PairResult, Profile
 
 from .conftest import create_room, join, new_client, state
 from .test_flow import DEV, MARKETER
 
 
-class FakeMessages:
+class FakeModels:
     def __init__(self, response=None, error=None):
         self.response = response
         self.error = error
         self.calls: list[dict] = []
 
-    async def create(self, **kwargs):
+    async def generate_content(self, **kwargs):
         self.calls.append(kwargs)
         if self.error:
             raise self.error
         return self.response
 
 
-def _response(text: str | None, stop_reason: str = "end_turn"):
-    content = [] if text is None else [SimpleNamespace(type="text", text=text)]
-    return SimpleNamespace(stop_reason=stop_reason, content=content)
+def _response(text: str | None, finish_reason: str = "STOP"):
+    parts = [] if text is None else [types.Part(text=text)]
+    candidate = types.Candidate(content=types.Content(role="model", parts=parts), finish_reason=finish_reason)
+    return types.GenerateContentResponse(candidates=[candidate])
 
 
-def _client(model="claude-opus-5", response=None, **overrides) -> tuple[AIClient, FakeMessages]:
-    settings = Settings(_env_file=None, anthropic_api_key="test", ai_model=model, **overrides)
+def _client(response=None, error=None, **overrides) -> tuple[AIClient, FakeModels]:
+    settings = Settings(_env_file=None, gemini_api_key="test", **overrides)
     ai = AIClient(settings)
-    fake = FakeMessages(response=response)
-    ai.client = SimpleNamespace(beta=SimpleNamespace(messages=fake))
+    fake = FakeModels(response=response, error=error)
+    ai.client = SimpleNamespace(models=fake)
     return ai, fake
 
 
@@ -45,47 +48,52 @@ GOOD = """{"results":[{"candidate_id":2,
   "for_candidate":{"kind":"complement","score":140,"reason":"개발 비용을 물어보세요","opener":"반가워요"}}]}"""
 
 
-def test_request_uses_structured_output_effort_and_fallbacks():
+def test_request_uses_json_schema_and_low_thinking():
     ai, fake = _client(response=_response(GOOD))
     out = asyncio.run(ai.recommend(P1, [P2]))
     call = fake.calls[0]
-    assert call["model"] == "claude-opus-5"
-    assert call["output_config"]["format"]["type"] == "json_schema"
-    assert call["output_config"]["effort"] == "low"
-    assert call["fallbacks"] == "default"
-    assert call["betas"] == [FALLBACK_BETA]
-    assert "thinking" not in call
+    config = call["config"]
+    assert call["model"] == "gemini-3.8-flash"
+    assert config.response_mime_type == "application/json"
+    assert config.response_json_schema == RECOMMENDATION_SCHEMA
+    assert config.thinking_config.thinking_level == types.ThinkingLevel.LOW
     forward, backward = out[2]
     assert forward == PairResult("complement", 88, "광고 경험이 있어요", "안녕하세요", "ai")
     assert backward.score == 100  # 범위를 넘으면 잘라낸다
 
 
-def test_haiku_skips_effort_and_fallbacks():
-    ai, fake = _client(model="claude-haiku-4-5", response=_response(GOOD))
+def test_empty_effort_leaves_thinking_to_model():
+    ai, fake = _client(response=_response(GOOD), ai_effort="")
     asyncio.run(ai.recommend(P1, [P2]))
-    call = fake.calls[0]
-    assert "effort" not in call["output_config"]
-    assert "fallbacks" not in call and "betas" not in call
-
-
-def test_fallbacks_can_be_turned_off():
-    ai, fake = _client(response=_response(GOOD), ai_fallbacks=False)
-    asyncio.run(ai.recommend(P1, [P2]))
-    assert "fallbacks" not in fake.calls[0]
+    assert fake.calls[0]["config"].thinking_config is None
 
 
 @pytest.mark.parametrize(
     "response",
     [
-        _response(None, stop_reason="refusal"),
-        _response('{"results": [', stop_reason="max_tokens"),
+        _response(None, finish_reason="SAFETY"),
+        _response('{"results": [', finish_reason="MAX_TOKENS"),
         _response("not json"),
         _response('{"wrong": 1}'),
         _response(None),
+        types.GenerateContentResponse(
+            candidates=[],
+            prompt_feedback=types.GenerateContentResponsePromptFeedback(block_reason="PROHIBITED_CONTENT"),
+        ),
     ],
 )
 def test_bad_responses_raise_unavailable(response):
     ai, _ = _client(response=response)
+    with pytest.raises(AIUnavailable):
+        asyncio.run(ai.recommend(P1, [P2]))
+
+
+@pytest.mark.parametrize(
+    "error",
+    [errors.ServerError(503, {"error": {"message": "overloaded"}}), httpx.ConnectTimeout("slow")],
+)
+def test_api_errors_raise_unavailable(error):
+    ai, _ = _client(error=error)
     with pytest.raises(AIUnavailable):
         asyncio.run(ai.recommend(P1, [P2]))
 
@@ -108,15 +116,15 @@ def test_parse_drops_unknown_and_duplicate_ids_and_blanks_none():
     assert backward.score == 0
 
 
-def test_card_request_sends_image_with_low_effort():
+def test_card_request_sends_image_with_low_thinking():
     card = '{"is_business_card":true,"name":"홍길동","headline":"회사 · 대표","about":"회사 대표예요","contact":"a@b.c"}'
     ai, fake = _client(response=_response(card))
     out = asyncio.run(ai.read_card(b"\xff\xd8\xffdata", "image/jpeg"))
     assert out.name == "홍길동"
     call = fake.calls[0]
-    assert call["output_config"]["effort"] == "low"
-    block = call["messages"][0]["content"][0]
-    assert block["type"] == "image" and block["source"]["media_type"] == "image/jpeg"
+    assert call["config"].thinking_config.thinking_level == types.ThinkingLevel.LOW
+    image = call["contents"][0]
+    assert image.inline_data.mime_type == "image/jpeg" and image.inline_data.data == b"\xff\xd8\xffdata"
 
 
 class FakeAI:

@@ -1,10 +1,11 @@
-"""Claude 호출. 추천 평가(한 사람 대 여러 후보)와 명함 읽기."""
+"""Gemini 호출. 추천 평가(한 사람 대 여러 후보)와 명함 읽기."""
 
-import base64
 import json
 import logging
 
-import anthropic
+import httpx
+from google import genai
+from google.genai import errors, types
 from pydantic import ValidationError
 
 from ..config import Settings
@@ -19,8 +20,6 @@ from .schemas import (
 )
 
 log = logging.getLogger(__name__)
-
-FALLBACK_BETA = "server-side-fallback-2026-07-01"
 
 RECOMMEND_SYSTEM = """당신은 오프라인 행사의 네트워킹 시간을 돕습니다. 참가자는 짧은 시간 안에 누구와 이야기할지 정해야 하고, 자기소개에 쓰는 시간을 아끼고 싶어 합니다.
 
@@ -63,47 +62,46 @@ class AIUnavailable(Exception):
 class AIClient:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
-        self.client = anthropic.AsyncAnthropic(
-            api_key=settings.anthropic_api_key,
-            timeout=settings.ai_timeout_seconds,
-            max_retries=2,
+        self.client = genai.Client(
+            api_key=settings.gemini_api_key,
+            http_options=types.HttpOptions(
+                timeout=int(settings.ai_timeout_seconds * 1000),
+                retry_options=types.HttpRetryOptions(attempts=3),
+            ),
+        ).aio
+
+    async def _structured(self, system: str, contents: list, schema: dict, effort: str) -> dict:
+        config = types.GenerateContentConfig(
+            system_instruction=system,
+            max_output_tokens=16000,
+            response_mime_type="application/json",
+            response_json_schema=schema,
+            # 2.5 계열처럼 thinking_level을 받지 않는 모델은 effort를 비워 둔다.
+            thinking_config=types.ThinkingConfig(thinking_level=effort) if effort else None,
+            # 도구를 쓰지 않는다. 켜 두면 호출마다 경고 로그가 남는다.
+            automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
         )
-
-    @property
-    def _is_haiku(self) -> bool:
-        # Haiku 4.5는 effort와 서버 측 대체 모델을 받지 않는다.
-        return "haiku" in self.settings.ai_model
-
-    async def _structured(self, system: str, content: list[dict], schema: dict, effort: str) -> dict:
-        output_config: dict = {"format": {"type": "json_schema", "schema": schema}}
-        if effort and not self._is_haiku:
-            output_config["effort"] = effort
-        kwargs: dict = {
-            "model": self.settings.ai_model,
-            "max_tokens": 16000,
-            "system": system,
-            "messages": [{"role": "user", "content": content}],
-            "output_config": output_config,
-        }
-        if self.settings.ai_fallbacks and not self._is_haiku:
-            kwargs["betas"] = [FALLBACK_BETA]
-            kwargs["fallbacks"] = "default"
-
         try:
-            response = await self.client.beta.messages.create(**kwargs)
-        except anthropic.APIStatusError as e:
-            log.warning("Claude API error %s: %s", e.status_code, e.message)
-            raise AIUnavailable(f"api_error_{e.status_code}") from e
-        except anthropic.APIConnectionError as e:
-            log.warning("Claude API connection error: %s", e)
+            response = await self.client.models.generate_content(
+                model=self.settings.ai_model, contents=contents, config=config
+            )
+        except errors.APIError as e:
+            log.warning("Gemini API error %s: %s", e.code, e.message)
+            raise AIUnavailable(f"api_error_{e.code}") from e
+        except httpx.HTTPError as e:
+            log.warning("Gemini API connection error: %s", e)
             raise AIUnavailable("connection") from e
 
-        if response.stop_reason == "refusal":
-            raise AIUnavailable("refusal")
-        if response.stop_reason == "max_tokens":
+        if not response.candidates:
+            # 프롬프트가 안전 필터에 막히면 후보 없이 온다.
+            raise AIUnavailable("blocked")
+        reason = response.candidates[0].finish_reason
+        if reason == types.FinishReason.MAX_TOKENS:
             raise AIUnavailable("max_tokens")
-        text = next((b.text for b in response.content if b.type == "text"), None)
-        if text is None:
+        if reason not in (None, types.FinishReason.STOP):
+            raise AIUnavailable(f"refusal_{reason}")
+        text = response.text
+        if not text:
             raise AIUnavailable("no_text")
         try:
             return json.loads(text)
@@ -118,23 +116,16 @@ class AIClient:
             "new": new.as_prompt_dict(),
             "candidates": [c.as_prompt_dict() for c in candidates],
         }
-        content = [{"type": "text", "text": json.dumps(payload, ensure_ascii=False)}]
-        data = await self._structured(RECOMMEND_SYSTEM, content, RECOMMENDATION_SCHEMA, self.settings.ai_effort)
+        contents = [json.dumps(payload, ensure_ascii=False)]
+        data = await self._structured(RECOMMEND_SYSTEM, contents, RECOMMENDATION_SCHEMA, self.settings.ai_effort)
         return parse_recommendations(data, {c.id for c in candidates})
 
     async def read_card(self, image: bytes, media_type: str) -> CardOut:
-        content = [
-            {
-                "type": "image",
-                "source": {
-                    "type": "base64",
-                    "media_type": media_type,
-                    "data": base64.standard_b64encode(image).decode("ascii"),
-                },
-            },
-            {"type": "text", "text": "이 명함으로 프로필 초안을 만들어 주세요."},
+        contents = [
+            types.Part.from_bytes(data=image, mime_type=media_type),
+            "이 명함으로 프로필 초안을 만들어 주세요.",
         ]
-        data = await self._structured(CARD_SYSTEM, content, CARD_SCHEMA, self.settings.ai_card_effort)
+        data = await self._structured(CARD_SYSTEM, contents, CARD_SCHEMA, self.settings.ai_card_effort)
         try:
             return CardOut.model_validate(data)
         except ValidationError as e:

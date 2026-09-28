@@ -32,7 +32,7 @@ def settings(tmp_path) -> Settings:
         _env_file=None,
         database_url=url,
         database_pool=False,
-        anthropic_api_key="",
+        gemini_api_key="",
         inline_tasks=True,
     )
 
