@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block title %}{{ room.name }} · Meetpoint{% endblock %}
 {% block body %}
-<main class="page" id="app" data-code="{{ room.code }}">
+<main class="page narrow" id="app" data-code="{{ room.code }}">
   <header class="topbar">
     <div class="topbar-text">
-      <span class="brand small">Meetpoint</span>
-      <h1 class="h3 room-name">{{ room.name }}</h1>
+      <span class="brand">Meetpoint</span>
+      <h1 class="room-name">{{ room.name }}</h1>
     </div>
-    <a class="btn ghost small" href="/r/{{ room.code }}/me">내 정보</a>
+    <a class="me-chip" href="/r/{{ room.code }}/me">내 명찰</a>
   </header>
 
   <div class="status" id="status" hidden></div>
@@ -19,11 +19,20 @@
     <button class="chip" data-filter="matched" role="tab" aria-selected="false">연결됨 <span class="count" data-count="matched"></span></button>
   </nav>
 
-  <section id="list" class="list" aria-live="polite">
-    <p class="empty">불러오는 중…</p>
+  <section id="list" class="list" aria-live="polite" aria-busy="true">
+    {% for _ in range(2) %}
+    <div class="person skeleton" aria-hidden="true">
+      <div class="band"></div>
+      <div class="person-body">
+        <div class="skeleton-line name"></div>
+        <div class="skeleton-line" style="width: 62%"></div>
+        <div class="skeleton-line" style="width: 88%"></div>
+      </div>
+    </div>
+    {% endfor %}
   </section>
 
   <div class="toast-area" id="toasts" aria-live="assertive"></div>
 </main>
 {% endblock %}
-{% block scripts %}<script src="/static/dom.js?v=1" defer></script><script src="/static/room.js?v=1" defer></script>{% endblock %}
+{% block scripts %}<script src="/static/dom.js?v=2" defer></script><script src="/static/room.js?v=3" defer></script>{% endblock %}

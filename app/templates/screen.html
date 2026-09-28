@@ -7,10 +7,15 @@
     <span class="brand">Meetpoint</span>
     <h1>{{ room.name }}</h1>
     <p class="screen-lead">QR을 찍고 2분만 적어주세요.<br>오늘 만나면 좋을 사람을 찾아드려요.</p>
-    <p class="screen-code">코드 <strong>{{ room.code }}</strong></p>
-    <p class="screen-count"><strong id="screen-count">{{ count }}</strong>명 참가 중</p>
+    <dl class="screen-meta">
+      <div class="screen-code"><dt>참가 코드</dt><dd>{{ room.code }}</dd></div>
+      <div class="screen-count"><dt>지금 참가 중</dt><dd><span id="screen-count">{{ count }}</span>명</dd></div>
+    </dl>
   </div>
-  <div class="screen-qr qr">{{ qr | safe }}</div>
+  <div class="badge screen-badge">
+    <div class="band"><span>참가 QR</span></div>
+    <div class="qr">{{ qr | safe }}</div>
+  </div>
 </main>
 {% endblock %}
-{% block scripts %}<script src="/static/screen.js?v=1" defer></script>{% endblock %}
+{% block scripts %}<script src="/static/screen.js?v=2" defer></script>{% endblock %}

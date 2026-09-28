@@ -1,5 +1,6 @@
 (() => {
   const el = window.el;
+  const icon = window.icon;
   const app = document.getElementById("app");
   const base = `/r/${app.dataset.code}`;
   const listEl = document.getElementById("list");
@@ -16,6 +17,8 @@
   let state = null;
   let filter = "all";
   const expanded = new Set();
+  // 처음 불러온 뒤 새로 연결된 명찰만 뒤집는다.
+  let matchedSeen = null;
 
   async function load() {
     const res = await fetch(`${base}/api/state`, { credentials: "same-origin", cache: "no-store" });
@@ -53,6 +56,20 @@
 
     const people = state.people.filter(visible);
     listEl.replaceChildren(...(people.length ? people.map(card) : [el("p", { class: "empty", text: EMPTY[filter] })]));
+    listEl.removeAttribute("aria-busy");
+
+    const matchedNow = new Set(state.people.filter((p) => p.matched).map((p) => p.id));
+    if (matchedSeen) {
+      for (const id of matchedNow) {
+        const node = matchedSeen.has(id) ? null : listEl.querySelector(`[data-id="${id}"]`);
+        if (!node) continue;
+        node.classList.add("just-matched");
+        // 뒷면이 펼쳐지는 자리가 아래 알림에 가리지 않게 명찰을 화면 안으로 올린다.
+        const smooth = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+        node.scrollIntoView({ block: "nearest", behavior: smooth ? "smooth" : "auto" });
+      }
+    }
+    matchedSeen = matchedNow;
   }
 
   function field(label, value) {
@@ -60,11 +77,22 @@
     return [el("dt", { text: label }), el("dd", { text: value })];
   }
 
-  function tagFor(p) {
-    if (p.matched) return el("span", { class: "tag matched", text: "서로 연결" });
-    if (p.rec && p.rec.kind !== "none") return el("span", { class: `tag ${p.rec.kind}`, text: KIND_LABEL[p.rec.kind] });
-    if (p.pending) return el("span", { class: "tag pending", text: "분석 중" });
-    return null;
+  // 명찰 머리띠: 관계 종류와 내 상태
+  function band(p) {
+    let kind = "none";
+    let label = "참가자";
+    if (p.matched) {
+      kind = "matched";
+      label = "서로 연결";
+    } else if (p.rec && p.rec.kind !== "none") {
+      kind = p.rec.kind;
+      label = KIND_LABEL[p.rec.kind];
+    } else if (p.pending) {
+      kind = "pending";
+      label = "분석 중";
+    }
+    const mark = p.liked && !p.matched ? el("span", { class: "band-state" }, icon("check"), "보냄") : null;
+    return el("div", { class: `band band-${kind}` }, el("span", { text: label }), mark);
   }
 
   function card(p) {
@@ -86,30 +114,31 @@
     return el(
       "article",
       { class: `person${p.matched ? " matched" : ""}`, "data-id": p.id },
+      band(p),
       el(
         "div",
-        { class: "person-head" },
-        el(
-          "div",
-          {},
-          el("h2", { class: "person-name", text: p.name }),
-          p.headline ? el("p", { class: "person-headline", text: p.headline }) : null,
-        ),
-        tagFor(p),
+        { class: "person-body" },
+        el("h2", { class: "person-name", text: p.name }),
+        p.headline ? el("p", { class: "person-headline", text: p.headline }) : null,
+        rec && rec.reason ? el("p", { class: "reason", text: rec.reason }) : null,
+        rec && rec.opener
+          ? el(
+              "p",
+              { class: "opener" },
+              el("span", { class: "opener-label", text: "이렇게 말을 걸어보세요" }),
+              el("span", { class: "opener-text", text: rec.opener }),
+            )
+          : null,
+        p.find_me ? el("p", { class: "find-me" }, icon("pin"), el("span", {}, "찾는 법 ", el("strong", { text: p.find_me }))) : null,
+        details,
       ),
-      rec && rec.reason ? el("p", { class: "reason", text: rec.reason }) : null,
-      rec && rec.opener
-        ? el("p", { class: "opener" }, el("span", { class: "opener-label", text: "이렇게 말을 걸어보세요" }), rec.opener)
-        : null,
-      p.find_me ? el("p", { class: "find-me" }, "찾는 법 ", el("strong", { text: p.find_me })) : null,
-      details,
-      actions(p),
+      ...actions(p),
     );
   }
 
   function actions(p) {
     let label = "만나고 싶어요";
-    let cls = "secondary";
+    let cls = "primary";
     if (p.matched) {
       label = "서로 만나고 싶어해요";
       cls = "matched";
@@ -119,15 +148,21 @@
     }
     const btn = el("button", { class: `btn like-btn ${cls}`, type: "button", "aria-pressed": p.liked ? "true" : "false" }, label);
     btn.addEventListener("click", () => toggleLike(p, btn));
-    const wrap = el("div", { class: "person-actions" }, btn);
+    const parts = [el("div", { class: "person-actions" }, btn)];
     if (p.matched) {
-      wrap.append(
+      // 명찰 뒷면: 서로 연결된 사람에게만 연락처가 보인다.
+      parts.push(
         p.contact
-          ? el("div", { class: "contact-box" }, el("span", { class: "contact-label", text: "연락처" }), p.contact)
-          : el("p", { class: "hint", text: "연락처는 적지 않았어요. 찾는 법을 보고 직접 찾아가 보세요." }),
+          ? el(
+              "div",
+              { class: "badge-back" },
+              el("span", { class: "badge-back-label", text: "연락처" }),
+              el("span", { class: "badge-back-value", text: p.contact }),
+            )
+          : el("div", { class: "badge-back" }, el("p", { class: "note", text: "연락처는 적지 않았어요. 찾는 법을 보고 직접 찾아가 보세요." })),
       );
     }
-    return wrap;
+    return parts;
   }
 
   async function toggleLike(p, btn) {

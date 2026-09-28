@@ -1,43 +1,80 @@
 {% extends "base.html" %}
 {% block body %}
-<main class="page narrow">
-  <header class="hero">
-    <span class="brand">Meetpoint</span>
-    <h1>네트워킹 시간에<br>만나야 할 사람부터 만나세요</h1>
-    <p class="lead">참가자는 QR을 찍고 2분만 적으면 돼요. 같은 분야에서 물어볼 사람과 다른 분야에서 도와줄 사람을 추천 이유와 함께 보여줘요.</p>
-  </header>
+<main class="page home">
+  <div class="home-top">
+    <header class="home-copy">
+      <span class="brand">Meetpoint</span>
+      <h1 class="h1">네트워킹 시간에<br>만나야 할 사람부터 만나세요</h1>
+      <p class="lead">참가자는 QR을 찍고 2분만 적으면 돼요. 같은 분야에서 물어볼 사람과 다른 분야에서 도와줄 사람을, 추천 이유와 건넬 첫마디까지 명찰로 보여줘요.</p>
+    </header>
 
-  <section class="card">
-    <h2 class="h3">행사 방 만들기</h2>
-    {% if error %}<p class="alert" role="alert">{{ error }}</p>{% endif %}
-    <form method="post" action="/rooms" class="form">
-      <label class="field">
-        <span class="label">행사 이름</span>
-        <input name="name" required maxlength="80" placeholder="예: 자사몰 창업 특강 네트워킹" value="{{ values.name or '' }}">
-      </label>
-      <label class="field">
-        <span class="label">설명 <span class="optional">선택</span></span>
-        <textarea name="description" rows="2" maxlength="300" placeholder="참가자에게 보여줄 한두 줄 안내">{{ values.description or '' }}</textarea>
-      </label>
-      <button class="btn primary" type="submit">방 만들고 QR 받기</button>
-    </form>
-    <p class="hint">로그인은 필요 없어요. 다음 화면의 관리 주소만 저장해 두세요.</p>
-  </section>
+    <div class="rack">
+      <p class="rack-label">예시 명찰 · 실제 참가자가 아니에요</p>
+      <div class="badge">
+        <div class="band band-complement"><span>다른 분야 도움</span></div>
+        <div class="person-body">
+          <p class="person-name">박마케터</p>
+          <p class="person-headline">퍼포먼스 마케터 · 5년차</p>
+          <p class="reason">쇼핑몰 광고를 5년 해온 마케터라 자사몰 마케팅 고민을 바로 물어볼 수 있어요.</p>
+          <p class="opener"><span class="opener-label">이렇게 말을 걸어보세요</span><span class="opener-text">자사몰을 준비 중인데 첫 광고는 어디서 시작하셨어요?</span></p>
+          <p class="find-me"><svg class="icon"><use href="#i-pin"/></svg><span>찾는 법 <strong>창가 쪽, 초록 가방</strong></span></p>
+        </div>
+      </div>
+      <div class="badge">
+        <div class="band band-common"><span>같은 분야 고수</span></div>
+        <div class="person-body">
+          <p class="person-name">최셀러</p>
+          <p class="person-headline">스마트스토어 운영 3년</p>
+          <p class="reason">카페24와 자체 개발을 먼저 고민해 본 사람이에요.</p>
+        </div>
+      </div>
+      <div class="badge">
+        <div class="band band-matched"><span>서로 연결</span></div>
+        <div class="person-body">
+          <p class="person-name">윤그로스</p>
+          <p class="person-headline">D2C 브랜드 그로스 매니저</p>
+        </div>
+        <div class="badge-back">
+          <span class="badge-back-label">연락처</span>
+          <span class="badge-back-value">growth@example.com</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <section class="card subtle">
-    <h2 class="h3">참가 코드가 있나요?</h2>
-    <form method="get" action="/join" class="inline-form">
-      <input name="code" maxlength="12" placeholder="예: K7M2QX" autocapitalize="characters" autocomplete="off" aria-label="참가 코드">
-      <button class="btn secondary" type="submit">입장</button>
-    </form>
-  </section>
+  <div class="home-forms">
+    <section class="sheet">
+      <h2 class="h3">행사 방 만들기</h2>
+      {% if error %}<p class="alert" role="alert">{{ error }}</p>{% endif %}
+      <form method="post" action="/rooms" class="form">
+        <label class="field">
+          <span class="label">행사 이름</span>
+          <input name="name" required maxlength="80" placeholder="예: 자사몰 창업 특강 네트워킹" value="{{ values.name or '' }}">
+        </label>
+        <label class="field">
+          <span class="label">설명 <span class="optional">선택</span></span>
+          <textarea name="description" rows="2" maxlength="300" placeholder="참가자에게 보여줄 한두 줄 안내">{{ values.description or '' }}</textarea>
+        </label>
+        <button class="btn primary block" type="submit">방 만들고 QR 받기</button>
+      </form>
+      <p class="hint">로그인은 필요 없어요. 다음 화면의 관리 주소만 저장해 두세요.</p>
+    </section>
 
-  <section class="how">
-    <h2 class="h3">이렇게 연결돼요</h2>
-    <ol class="steps">
-      <li><strong>같은 분야 고수</strong><span>나와 같은 일을 더 잘하는 사람에게 막힌 걸 물어봐요.</span></li>
-      <li><strong>다른 분야 도움</strong><span>내가 못 하는 걸 하는 사람을 찾아요. 개발자라면 마케터처럼요.</span></li>
-      <li><strong>서로 만나고 싶어요</strong><span>둘 다 누르면 서로에게 알려주고, 찾는 법과 연락처를 보여줘요.</span></li>
+    <section class="desk">
+      <h2 class="h3">참가 코드가 있나요?</h2>
+      <form method="get" action="/join" class="inline-form">
+        <input name="code" maxlength="12" placeholder="예: K7M2QX" autocapitalize="characters" autocomplete="off" aria-label="참가 코드">
+        <button class="btn secondary" type="submit">입장</button>
+      </form>
+    </section>
+  </div>
+
+  <section class="legend">
+    <h2 class="h3 legend-title">이렇게 연결돼요</h2>
+    <ol>
+      <li><span class="swatch same"></span><p><strong>같은 분야 고수</strong><span class="text">나와 같은 일을 더 잘하는 사람에게 막힌 걸 물어봐요.</span></p></li>
+      <li><span class="swatch other"></span><p><strong>다른 분야 도움</strong><span class="text">내가 못 하는 걸 하는 사람을 찾아요. 개발자라면 마케터처럼요.</span></p></li>
+      <li><span class="swatch match"></span><p><strong>서로 만나고 싶어요</strong><span class="text">둘 다 누르면 서로에게 알려주고, 찾는 법과 연락처를 보여줘요.</span></p></li>
     </ol>
   </section>
 </main>

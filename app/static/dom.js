@@ -14,3 +14,15 @@ window.el = function el(tag, attrs, ...children) {
   }
   return node;
 };
+
+// base.html에 심어 둔 <symbol>을 가리키는 아이콘
+window.icon = function icon(name) {
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("class", "icon");
+  svg.setAttribute("aria-hidden", "true");
+  const use = document.createElementNS(ns, "use");
+  use.setAttribute("href", `#i-${name}`);
+  svg.append(use);
+  return svg;
+};

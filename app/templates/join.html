@@ -10,7 +10,19 @@
 
   {% if left %}<p class="notice">내 정보를 이 방에서 지웠어요.</p>{% endif %}
 
-  <section class="card">
+  <div class="preview-wrap" aria-hidden="true">
+    <p class="preview-label">{{ '내 명찰' if mode == 'edit' else '적는 대로 명찰이 만들어져요' }}</p>
+    <div class="badge preview" id="badge-preview">
+      <div class="band"><span>참가자</span></div>
+      <div class="person-body">
+        <p class="person-name" data-preview="name" data-blank="이름">{{ values.name or '이름' }}</p>
+        <p class="person-headline" data-preview="headline" data-blank="한 줄 소개">{{ values.headline or '한 줄 소개' }}</p>
+        <p class="find-me" data-preview-wrap="find_me"{% if not values.find_me %} hidden{% endif %}><svg class="icon"><use href="#i-pin"/></svg><span>찾는 법 <strong data-preview="find_me">{{ values.find_me or '' }}</strong></span></p>
+      </div>
+    </div>
+  </div>
+
+  <section class="sheet">
     {% if mode == "edit" %}
       <h2 class="h3">내 정보 고치기</h2>
       <p class="muted small">소개나 묻고 싶은 것을 바꾸면 추천을 다시 계산해요.</p>
@@ -43,6 +55,10 @@
         <input name="headline" maxlength="60" placeholder="예: 자사몰 창업 준비 · 백엔드 개발자" value="{{ values.headline or '' }}">
       </label>
       <label class="field">
+        <span class="label">현장에서 나를 찾는 법 <span class="optional">모두에게 보여요</span></span>
+        <input name="find_me" maxlength="60" placeholder="예: 파란 셔츠, 창가 쪽 3번 테이블" value="{{ values.find_me or '' }}">
+      </label>
+      <label class="field">
         <span class="label">자기소개</span>
         <textarea name="about" required rows="3" maxlength="400" placeholder="예: 자사몰을 직접 개발하고 있어요. 서버와 배포는 해봤어요.">{{ values.about or '' }}</textarea>
       </label>
@@ -60,22 +76,20 @@
       </fieldset>
 
       <label class="field">
-        <span class="label">현장에서 나를 찾는 법 <span class="optional">모두에게 보여요</span></span>
-        <input name="find_me" maxlength="60" placeholder="예: 파란 셔츠, 창가 쪽 3번 테이블" value="{{ values.find_me or '' }}">
-      </label>
-      <label class="field">
         <span class="label">연락처 <span class="optional">서로 만나고 싶어요를 누른 사람에게만 보여요</span></span>
         <input name="contact" maxlength="100" placeholder="이메일, 카카오톡 ID, 링크드인 주소 등" value="{{ values.contact or '' }}">
       </label>
 
-      <button class="btn primary" type="submit">{{ '저장하기' if mode == 'edit' else '입장하기' }}</button>
-      {% if mode == "edit" %}<a class="btn ghost" href="/r/{{ room.code }}">돌아가기</a>{% endif %}
+      <div class="form-actions">
+        <button class="btn primary block" type="submit">{{ '저장하기' if mode == 'edit' else '입장하기' }}</button>
+        {% if mode == "edit" %}<a class="btn ghost block" href="/r/{{ room.code }}">돌아가기</a>{% endif %}
+      </div>
     </form>
     <p class="hint">적은 내용은 이 방 참가자에게 보이고, 방을 만든 지 30일이 지나면 모두 지워져요. 추천을 위해 AI가 소개 내용을 읽어요.</p>
   </section>
 
   {% if mode == "edit" %}
-  <section class="card subtle">
+  <section class="desk">
     <h2 class="h3">이 방에서 나가기</h2>
     <p class="muted small">내 소개와 추천, 연결 기록을 바로 지워요.</p>
     <form method="post" action="/r/{{ room.code }}/leave" onsubmit="return confirm('내 정보를 이 방에서 모두 지울까요?')">
@@ -86,5 +100,6 @@
 </main>
 {% endblock %}
 {% block scripts %}
-{% if ai_enabled %}<script src="/static/join.js?v=1" data-code="{{ room.code }}" defer></script>{% endif %}
+<script src="/static/badge.js?v=1" defer></script>
+{% if ai_enabled %}<script src="/static/join.js?v=2" data-code="{{ room.code }}" defer></script>{% endif %}
 {% endblock %}

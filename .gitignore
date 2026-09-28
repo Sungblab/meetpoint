@@ -7,3 +7,9 @@ __pycache__/
 *.sqlite3
 node_modules/
 backups/
+
+# 디자인 작업 중 생기는 임시 파일
+.playwright-mcp/
+.impeccable/review/
+.impeccable/questions/
+.impeccable/direction-round-*.json

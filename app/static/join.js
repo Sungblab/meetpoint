@@ -30,6 +30,7 @@
     if (!field.value.trim() || field.dataset.fromCard === "1") {
       field.value = value;
       field.dataset.fromCard = "1";
+      field.dispatchEvent(new Event("input", { bubbles: true }));
     }
   }
 
