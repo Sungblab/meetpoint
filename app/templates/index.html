@@ -1,18 +1,19 @@
 {% extends "base.html" %}
 {% block body %}
 <main class="page home">
-  <div class="home-top">
+  <div class="home-top home-split">
     <header class="home-copy">
       <span class="brand">Meetpoint</span>
       <h1 class="h1">네트워킹 시간에<br>만나야 할 사람부터 만나세요</h1>
-      <p class="lead"><span>참가자는 QR을 찍고 2분만 적으면 돼요.</span><span>같은&nbsp;분야에서 물어볼&nbsp;사람, 다른&nbsp;분야에서 도와줄&nbsp;사람을 이유와 첫마디까지 명찰로 보여줘요.</span></p>
+      <p class="lead"><span>참가자는 QR을 찍고 2분만 적으면 돼요.</span><span>같은&nbsp;분야에서 물어볼&nbsp;사람, 다른&nbsp;분야에서 도와줄&nbsp;사람을 이유와 첫마디까지 명찰로 보여줘요.</span><span>서로 만나고 싶어요를 누르면 전자 명함을 주고받고, 휴대폰 연락처에 바로 저장해요.</span></p>
       <a class="btn light hero-cta" href="#create">방 만들기</a>
-      <figure class="demo">
-        <div class="demo-frame">
-          <iframe src="https://www.youtube-nocookie.com/embed/OzUPFvUdQ-I?rel=0" title="Meetpoint 실사용 영상: 노트북, 프로젝터, 휴대폰 4대로 찍은 행사 한 번" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-        </div>
-        <figcaption>노트북, 프로젝터, 휴대폰 4대로 실제 행사처럼 처음부터 끝까지 찍었어요.</figcaption>
-      </figure>
+      <section class="desk home-join">
+        <h2 class="h3">참가 코드가 있나요?</h2>
+        <form method="get" action="/join" class="inline-form">
+          <input name="code" maxlength="12" placeholder="예: K7M2QX" autocapitalize="characters" autocomplete="off" aria-label="참가 코드">
+          <button class="btn secondary" type="submit">입장</button>
+        </form>
+      </section>
     </header>
 
     <div class="rack">
@@ -21,6 +22,7 @@
         <div class="band"><span>내 명찰</span></div>
         <div class="person-body">
           <p class="person-name">김하늘</p>
+          <p class="person-role">예비창업자</p>
           <p class="person-headline">동네 반찬 구독 서비스 준비 중</p>
           <dl class="my-asks">
             <div class="ask-row common"><dt>같은 분야에 묻고 싶은 것</dt><dd>예비창업패키지 서류를 어떻게 썼는지</dd></div>
@@ -28,6 +30,7 @@
           </dl>
         </div>
       </div>
+
       <p class="rack-label">이 질문에 맞춰 이렇게 추천해요</p>
       <div class="badge">
         <div class="band band-common"><span>같은 분야 고수</span></div>
@@ -40,7 +43,7 @@
           <p class="find-me"><svg class="icon"><use href="#i-pin"/></svg><span>찾는 법 <strong>맨 앞줄, 노트북 스티커 많은 사람</strong></span></p>
         </div>
       </div>
-      <div class="badge half">
+      <div class="badge">
         <div class="band band-complement"><span>다른 분야 도움</span></div>
         <div class="person-body">
           <p class="person-name">이서연</p>
@@ -49,7 +52,9 @@
           <p class="reason">법인 설립 시기와 처음 낼 세금을 바로 물어볼 수 있어요.</p>
         </div>
       </div>
-      <div class="badge half">
+
+      <p class="rack-label">둘 다 만나고 싶어요를 누르면 명찰 뒷면에 전자 명함이 열려요</p>
+      <div class="badge">
         <div class="band band-matched"><span>서로 연결</span></div>
         <div class="person-body">
           <p class="person-name">정우진</p>
@@ -67,16 +72,42 @@
             </div>
             <span class="ecard-brand">Meetpoint</span>
           </div>
+          <p class="note">연락처에 저장을 누르면 만난 이유와 함께 휴대폰 연락처에 들어가요.</p>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="home-forms">
-    <section class="sheet" id="create">
-      <h2 class="h3">행사 방 만들기</h2>
+  <section class="home-how home-split">
+    <div class="legend">
+      <h2 class="h2 legend-title">이렇게 연결돼요</h2>
+      <ol>
+        <li><span class="swatch same"></span><p><strong>같은 분야 고수</strong><span class="text">나와 같은 일을 더 잘하는 사람에게 막힌 걸 물어봐요.</span></p></li>
+        <li><span class="swatch other"></span><p><strong>다른 분야 도움</strong><span class="text">내가 못 하는 걸 하는 사람을 찾아요. 창업자라면 세무사처럼요.</span></p></li>
+        <li><span class="swatch match"></span><p><strong>서로 만나고 싶어요</strong><span class="text">둘 다 누르면 서로에게 알리고 전자 명함을 열어요. 한쪽만 누른 건 상대에게 보이지 않아요.</span></p></li>
+      </ol>
+    </div>
+    <figure class="demo">
+      <div class="demo-frame">
+        <iframe src="https://www.youtube-nocookie.com/embed/OzUPFvUdQ-I?rel=0" title="Meetpoint 실사용 영상: 노트북, 프로젝터, 휴대폰 4대로 찍은 행사 한 번" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+      <figcaption>노트북, 프로젝터, 휴대폰 4대로 실제 행사처럼 처음부터 끝까지 찍었어요.</figcaption>
+    </figure>
+  </section>
+
+  <section class="home-create home-split" id="create">
+    <div class="home-create-copy">
+      <h2 class="h2">행사 방 만들기</h2>
+      <p class="muted">로그인은 필요 없어요. {% if mail_enabled %}관리 주소는 다음 화면과 메일로 드려요.{% else %}다음 화면의 관리 주소를 저장해 두세요.{% endif %}</p>
+      <ol class="steps">
+        <li><strong>방을 만들면</strong> 참가 QR과 관리 주소가 나와요.</li>
+        <li><strong>프로젝터에 QR을 띄우면</strong> 참가자가 휴대폰으로 들어와 2분 동안 적어요.</li>
+        <li><strong>관리 화면에서</strong> 참가자와 연결 수를 보고, 입장을 마감하거나 방을 지워요.</li>
+      </ol>
+    </div>
+    <div class="sheet">
       {% if error %}<p class="alert" role="alert">{{ error }}</p>{% endif %}
-      <form method="post" action="/rooms" class="form">
+      <form method="post" action="/rooms#create" class="form">
         <label class="field">
           <span class="label">행사 이름</span>
           <input name="name" required maxlength="80" placeholder="예: 초기 창업자 네트워킹 데이" value="{{ values.name or '' }}">
@@ -95,25 +126,8 @@
         </label>
         <button class="btn primary block" type="submit">방 만들고 QR 받기</button>
       </form>
-      <p class="hint">로그인은 필요 없어요. {% if mail_enabled %}관리 주소는 다음 화면과 메일로 드려요.{% else %}다음 화면의 관리 주소를 저장해 두세요.{% endif %}<br>이메일은 관리 주소 전송과 방 운영 안내에 쓰고, 방을 지우면 함께 지워요. <a href="/privacy" target="_blank">개인정보 처리방침</a></p>
-    </section>
-
-    <section class="desk">
-      <h2 class="h3">참가 코드가 있나요?</h2>
-      <form method="get" action="/join" class="inline-form">
-        <input name="code" maxlength="12" placeholder="예: K7M2QX" autocapitalize="characters" autocomplete="off" aria-label="참가 코드">
-        <button class="btn secondary" type="submit">입장</button>
-      </form>
-    </section>
-  </div>
-
-  <section class="legend">
-    <h2 class="h3 legend-title">이렇게 연결돼요</h2>
-    <ol>
-      <li><span class="swatch same"></span><p><strong>같은 분야 고수</strong><span class="text">나와 같은 일을 더 잘하는 사람에게<br>막힌 걸 물어봐요.</span></p></li>
-      <li><span class="swatch other"></span><p><strong>다른 분야 도움</strong><span class="text">내가 못 하는 걸 하는 사람을 찾아요.<br>창업자라면 세무사처럼요.</span></p></li>
-      <li><span class="swatch match"></span><p><strong>서로 만나고 싶어요</strong><span class="text">둘 다 누르면 서로에게 알려주고,<br>찾는 법과 연락처를 보여줘요.</span></p></li>
-    </ol>
+      <p class="hint">이메일은 관리 주소 전송과 방 운영 안내에 쓰고, 방을 지우면 함께 지워요. <a href="/privacy" target="_blank">개인정보 처리방침</a></p>
+    </div>
   </section>
 </main>
 {% endblock %}

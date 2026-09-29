@@ -400,3 +400,11 @@ def test_join_form_has_company_and_title(client):
     assert 'name="company"' in page and 'name="job_title"' in page
     assert 'data-preview="job_title"' in page
     assert "회사, 직함" in client.get("/privacy").text
+
+
+def test_home_explains_the_ecard(client):
+    home = client.get("/").text
+    assert "전자 명함" in home
+    # 찾는 법은 처음부터 모두에게 보인다. 연결돼야 보인다고 쓰지 않는다.
+    assert "찾는 법과 연락처를 보여줘요" not in home
+    assert 'id="create"' in home and 'action="/join"' in home

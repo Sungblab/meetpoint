@@ -558,20 +558,23 @@ a.ecard-line:hover span { text-decoration: underline; text-underline-offset: 3px
 /* ---------- 첫 화면 ---------- */
 
 .home { max-width: 1120px; }
-.home-top { display: grid; gap: 36px; padding: 12px 0 8px; }
+/* 첫 화면의 세 구획(첫 화면, 연결 방식, 방 만들기)은 같은 두 열 격자를 쓴다: 왼쪽 글, 오른쪽 명찰·영상·양식 */
+.home-split { display: grid; gap: 36px; }
+.home-top { padding: 12px 0 8px; }
 .home-copy { display: grid; gap: 16px; align-content: start; }
 .home-copy .lead { font-size: 17px; line-height: 1.6; color: var(--on-table-2); max-width: 34em; }
 /* 문장마다 새 줄에서 시작하고, 문장 안에서는 줄 길이를 고르게 맞춘다 */
 .home-copy .lead span { display: block; text-wrap: balance; }
 .home-copy .h1 { margin-top: 12px; }
 .hero-cta { justify-self: start; min-height: 52px; margin-top: 8px; padding: 0 28px; font-size: 17px; }
+.home-join { margin-top: 20px; }
 #create { scroll-margin-top: 20px; }
-.demo { margin: 12px 0 0; }
+.demo { margin: 0; }
 .demo-frame { aspect-ratio: 16 / 9; border-radius: var(--radius); overflow: hidden; background: #000; }
 .demo-frame iframe { display: block; width: 100%; height: 100%; border: 0; }
 .demo figcaption { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--on-table-2); text-wrap: balance; }
 
-.rack { position: relative; display: grid; gap: 12px; }
+.rack { display: grid; gap: 12px; align-content: start; }
 .rack .badge .person-body { padding-bottom: 18px; }
 .rack .badge .person-name { font-size: 28px; }
 .rack-label { font-size: 13px; font-weight: 700; color: var(--on-table-2); }
@@ -583,13 +586,13 @@ a.ecard-line:hover span { text-decoration: underline; text-underline-offset: 3px
 .ask-row dt { font-size: 12px; font-weight: 800; color: var(--ink-3); }
 .ask-row dd { font-size: 15px; font-weight: 700; }
 .rack .badge-back { padding: 14px 18px 16px; }
+.rack .badge-back .note { margin-top: 12px; }
 
-.home-forms { display: grid; gap: 16px; margin-top: 36px; }
+.home-how, .home-create { margin-top: 72px; }
 .inline-form { display: flex; gap: 8px; margin-top: 14px; }
 .inline-form input { flex: 1; min-width: 0; letter-spacing: 0.08em; font-weight: 700; text-transform: uppercase; }
 .inline-form input::placeholder { letter-spacing: 0.04em; font-weight: 500; text-transform: none; }
 
-.legend { margin-top: 48px; max-width: 640px; }
 .legend-title { padding-bottom: 14px; border-bottom: 1px solid var(--table-line); }
 .legend ol { display: grid; }
 .legend li { display: grid; grid-template-columns: 64px 1fr; gap: 16px; align-items: center; align-content: start; padding: 16px 0; border-bottom: 1px solid var(--table-line); }
@@ -599,7 +602,14 @@ a.ecard-line:hover span { text-decoration: underline; text-underline-offset: 3px
 .swatch.match { background: var(--match); }
 .legend .swatch::before { content: ""; position: absolute; top: 10px; left: 50%; width: 26px; height: 8px; margin-left: -13px; border-radius: 4px; background: var(--table); }
 .legend strong { display: block; font-size: 16px; font-weight: 800; color: var(--on-table); }
-.legend span.text { font-size: 15px; color: var(--on-table-2); }
+.legend span.text { display: block; margin-top: 2px; font-size: 15px; color: var(--on-table-2); }
+.home-create-copy { display: grid; gap: 12px; align-content: start; }
+.home-create-copy .muted { font-size: 16px; line-height: 1.6; }
+/* 주최자가 할 일 세 단계. 순서가 곧 정보라 번호를 단다 */
+.steps { margin-top: 12px; border-top: 1px solid var(--table-line); counter-reset: step; }
+.steps li { position: relative; padding: 14px 0 14px 32px; border-bottom: 1px solid var(--table-line); font-size: 15px; line-height: 1.6; color: var(--on-table-2); text-wrap: pretty; counter-increment: step; }
+.steps li::before { content: counter(step); position: absolute; top: 14px; left: 0; font-weight: 800; color: var(--on-table); font-variant-numeric: tabular-nums; }
+.steps strong { font-weight: 800; color: var(--on-table); }
 
 /* ---------- 주최자 화면 ---------- */
 
@@ -684,16 +694,19 @@ body.screen { min-height: 100vh; }
   .page { padding-top: 28px; }
   .topbar { margin-top: -28px; padding-top: 18px; }
   .host-grid { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); align-items: start; }
-  .home-forms { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); align-items: start; }
 }
 
 @media (min-width: 960px) {
-  .home-top { grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr); gap: 56px; align-items: start; padding-top: 36px; }
+  .home-split { grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr); gap: 56px; align-items: start; }
+  .home-top { padding-top: 36px; }
+  .home-how, .home-create { margin-top: 112px; }
   .home-copy { padding-top: 24px; }
   .h1 { font-size: 52px; }
-  .rack { grid-template-columns: 1fr 1fr; align-items: start; }
-  .rack > * { grid-column: 1 / -1; }
-  .rack > .badge.half { grid-column: auto; }
+}
+
+/* 글 쪽이 화면 안에 들어올 만큼 높을 때만, 예시 명찰을 내리는 동안 첫 화면 글을 붙잡아 둔다 */
+@media (min-width: 960px) and (min-height: 760px) {
+  .home-copy { position: sticky; top: 8px; }
 }
 
 @media (max-width: 759px) {
