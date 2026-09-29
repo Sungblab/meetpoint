@@ -175,7 +175,7 @@
         el("div", { class: "ecard-lines" }, lines),
         el("span", { class: "ecard-brand", text: "Meetpoint" }),
       ),
-      el("a", { class: "btn primary block ecard-save", href: `${base}/api/vcard/${p.id}`, download: `${p.name}.vcf` }, "연락처에 저장"),
+      el("a", { class: "btn primary block ecard-save", href: `${base}/api/vcard/${p.id}` }, "연락처에 저장"),
     );
   }
 

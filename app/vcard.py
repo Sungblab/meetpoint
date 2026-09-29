@@ -29,5 +29,6 @@ def build_vcard(*, name: str, headline: str, phone: str, email: str, other: str,
 
 
 def vcard_disposition(name: str) -> str:
+    # inline이어야 iOS Safari가 파일 앱 대신 연락처 추가 화면을 연다. 안드로이드·데스크톱은 그대로 내려받는다.
     # 한글 이름은 filename*로, 오래된 브라우저에는 ASCII 이름을 준다.
-    return f"attachment; filename=\"contact.vcf\"; filename*=UTF-8''{quote(name + '.vcf')}"
+    return f"inline; filename=\"contact.vcf\"; filename*=UTF-8''{quote(name + '.vcf')}"

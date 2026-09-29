@@ -303,7 +303,7 @@ def test_join_validates_phone_and_email(client):
 
 
 def test_join_accepts_common_phone_formats(app):
-    phones = ["010-1234-5678", "010 1234 5678", "+82 10-1234-5678", "02-123-4567", "(02) 123-4567"]
+    phones = ["010-1234-5678", "010 1234 5678", "+82 10-1234-5678", "02-123-4567", "(02) 123-4567", "010.1234.5678"]
     for i, phone in enumerate(phones):
         with new_client(app) as c:
             _, code = create_room(c, name=f"방 {i}")
@@ -347,6 +347,8 @@ def test_vcard_only_for_mutual_connections(app):
         card = a.get(f"/r/{code}/api/vcard/{b_id}")
         assert card.status_code == 200
         assert card.headers["content-type"].startswith("text/vcard")
+        # iOS Safari는 attachment면 파일 앱으로 보내고, inline이어야 연락처 추가 화면을 연다.
+        assert card.headers["content-disposition"].startswith("inline;")
         assert 'filename="contact.vcf"' in card.headers["content-disposition"]
         assert "filename*=UTF-8''%EB%B0%95" in card.headers["content-disposition"]
         body = card.text

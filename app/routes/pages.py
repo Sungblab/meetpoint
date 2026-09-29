@@ -37,7 +37,7 @@ SINGLE_LINE = {"name", "headline", "find_me", "phone", "email", "contact"}
 MATCHING_FIELDS = ("name", "headline", "about", "ask_same", "ask_other")
 
 _CODE_CLEAN = re.compile(r"[^A-Za-z0-9]")
-_PHONE_CHARS = re.compile(r"[0-9+\-\s()]+")
+_PHONE_CHARS = re.compile(r"[0-9+\-.\s()]+")
 _EMAIL = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
 
 
