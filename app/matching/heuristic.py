@@ -72,7 +72,7 @@ def _strip_particle(word: str) -> str:
 
 
 def _profile_text(p: Profile) -> str:
-    return f"{p.headline} {p.about}"
+    return f"{p.job_title} {p.company} {p.headline} {p.about}"
 
 
 def score_pair(viewer: Profile, target: Profile) -> PairResult:

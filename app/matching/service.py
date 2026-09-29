@@ -23,6 +23,8 @@ def to_profile(p: Participant) -> Profile:
     return Profile(
         id=p.id,
         name=p.name,
+        company=p.company,
+        job_title=p.job_title,
         headline=p.headline,
         about=p.about,
         ask_same=p.ask_same,

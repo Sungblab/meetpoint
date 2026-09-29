@@ -16,6 +16,7 @@
       <div class="band"><span>참가자</span></div>
       <div class="person-body">
         <p class="person-name" data-preview="name" data-blank="이름">{{ values.name or '이름' }}</p>
+        <p class="person-role" data-preview-wrap="job_title company"{% if not (values.job_title or values.company) %} hidden{% endif %}><span data-preview="job_title">{{ values.job_title or '' }}</span><span data-preview="company">{{ values.company or '' }}</span></p>
         <p class="person-headline" data-preview="headline" data-blank="한 줄 소개">{{ values.headline or '한 줄 소개' }}</p>
         <p class="find-me" data-preview-wrap="find_me"{% if not values.find_me %} hidden{% endif %}><svg class="icon"><use href="#i-pin"/></svg><span>찾는 법 <strong data-preview="find_me">{{ values.find_me or '' }}</strong></span></p>
       </div>
@@ -50,6 +51,16 @@
         <span class="label">이름</span>
         <input name="name" required maxlength="30" autocomplete="name" placeholder="예: 김하늘" value="{{ values.name or '' }}">
       </label>
+      <div class="field-pair">
+        <label class="field">
+          <span class="label">회사 <span class="optional">선택</span></span>
+          <input name="company" maxlength="60" autocomplete="organization" placeholder="예: 한상밀키트" value="{{ values.company or '' }}">
+        </label>
+        <label class="field">
+          <span class="label">직함 <span class="optional">선택</span></span>
+          <input name="job_title" maxlength="40" autocomplete="organization-title" placeholder="예: 대표" value="{{ values.job_title or '' }}">
+        </label>
+      </div>
       <label class="field">
         <span class="label">한 줄 소개 <span class="optional">선택</span></span>
         <input name="headline" maxlength="60" placeholder="예: 동네 반찬 구독 서비스 준비 중" value="{{ values.headline or '' }}">
@@ -93,6 +104,7 @@
           <p class="preview-label">서로 연결되면 상대에게 이렇게 보여요</p>
           <div class="ecard preview">
             <p class="ecard-name" data-preview="name" data-blank="이름">{{ values.name or '이름' }}</p>
+            <p class="ecard-role" data-preview-wrap="job_title company"{% if not (values.job_title or values.company) %} hidden{% endif %}><span data-preview="job_title">{{ values.job_title or '' }}</span><span data-preview="company">{{ values.company or '' }}</span></p>
             <p class="ecard-headline" data-preview="headline" data-blank="한 줄 소개">{{ values.headline or '한 줄 소개' }}</p>
             <div class="ecard-lines">
               <p class="ecard-line" data-preview-wrap="phone"{% if not values.phone %} hidden{% endif %}><svg class="icon"><use href="#i-phone"/></svg><span data-preview="phone">{{ values.phone or '' }}</span></p>
@@ -124,6 +136,6 @@
 </main>
 {% endblock %}
 {% block scripts %}
-<script src="/static/badge.js?v=2" defer></script>
-{% if ai_enabled %}<script src="/static/join.js?v=3" data-code="{{ room.code }}" defer></script>{% endif %}
+<script src="/static/badge.js?v=3" defer></script>
+{% if ai_enabled %}<script src="/static/join.js?v=4" data-code="{{ room.code }}" defer></script>{% endif %}
 {% endblock %}

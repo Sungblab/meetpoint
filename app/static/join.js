@@ -50,6 +50,8 @@
         return;
       }
       fill("name", data.name);
+      fill("company", data.company);
+      fill("job_title", data.job_title);
       fill("headline", data.headline);
       fill("about", data.about);
       fill("phone", data.phone);

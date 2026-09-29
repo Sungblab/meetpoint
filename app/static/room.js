@@ -8,6 +8,8 @@
   const statusEl = document.getElementById("status");
   const toastsEl = document.getElementById("toasts");
   const KIND_LABEL = { common: "같은 분야 고수", complement: "다른 분야 도움" };
+  // "대표 · 한상밀키트"
+  const role = (p) => [p.job_title, p.company].filter(Boolean).join(" · ");
   const EMPTY = {
     all: "아직 다른 참가자가 없어요. 사람들이 들어오면 여기에 바로 보여요.",
     common: "같은 분야에서 연결되는 사람이 아직 없어요.",
@@ -120,6 +122,7 @@
         "div",
         { class: "person-body" },
         el("h2", { class: "person-name", text: p.name }),
+        role(p) ? el("p", { class: "person-role", text: role(p) }) : null,
         p.headline ? el("p", { class: "person-headline", text: glue(p.headline) }) : null,
         rec && rec.reason ? el("p", { class: "reason", text: glue(rec.reason) }) : null,
         rec && rec.opener
@@ -171,6 +174,7 @@
         "div",
         { class: "ecard" },
         el("p", { class: "ecard-name", text: p.name }),
+        role(p) ? el("p", { class: "ecard-role", text: role(p) }) : null,
         p.headline ? el("p", { class: "ecard-headline", text: glue(p.headline) }) : null,
         el("div", { class: "ecard-lines" }, lines),
         el("span", { class: "ecard-brand", text: "Meetpoint" }),

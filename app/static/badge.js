@@ -11,7 +11,7 @@
       node.classList.toggle("is-blank", !v);
     }
     for (const wrap of document.querySelectorAll("[data-preview-wrap]")) {
-      wrap.hidden = !value(wrap.dataset.previewWrap);
+      wrap.hidden = wrap.dataset.previewWrap.split(" ").every((name) => !value(name));
     }
   }
 

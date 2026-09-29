@@ -14,6 +14,8 @@ router = APIRouter()
 
 PROFILE_LIMITS = {
     "name": 30,
+    "company": 60,
+    "job_title": 40,
     "headline": 60,
     "about": 400,
     "ask_same": 300,
@@ -25,6 +27,8 @@ PROFILE_LIMITS = {
 }
 PROFILE_LABELS = {
     "name": "이름",
+    "company": "회사",
+    "job_title": "직함",
     "headline": "한 줄 소개",
     "about": "자기소개",
     "ask_same": "같은 분야에 묻고 싶은 것",
@@ -34,8 +38,8 @@ PROFILE_LABELS = {
     "email": "이메일",
     "contact": "기타 연락처",
 }
-SINGLE_LINE = {"name", "headline", "find_me", "phone", "email", "contact"}
-MATCHING_FIELDS = ("name", "headline", "about", "ask_same", "ask_other")
+SINGLE_LINE = {"name", "company", "job_title", "headline", "find_me", "phone", "email", "contact"}
+MATCHING_FIELDS = ("name", "company", "job_title", "headline", "about", "ask_same", "ask_other")
 
 _CODE_CLEAN = re.compile(r"[^A-Za-z0-9]")
 _PHONE_CHARS = re.compile(r"[0-9+\-.\s()]+")
@@ -355,6 +359,8 @@ async def read_card(request: Request, code: str, file: UploadFile = File(...)):
     return JSONResponse(
         {
             "name": card.name[: PROFILE_LIMITS["name"]],
+            "company": card.company[: PROFILE_LIMITS["company"]],
+            "job_title": card.job_title[: PROFILE_LIMITS["job_title"]],
             "headline": card.headline[: PROFILE_LIMITS["headline"]],
             "about": card.about[: PROFILE_LIMITS["about"]],
             "phone": card.phone[: PROFILE_LIMITS["phone"]],

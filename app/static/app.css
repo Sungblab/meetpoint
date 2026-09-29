@@ -287,6 +287,8 @@ input[readonly] { background: var(--stock-2); color: var(--ink-2); }
 .person-body { padding: 18px 18px 0; }
 .person-name { font-size: 34px; line-height: 1.12; font-weight: 800; letter-spacing: -0.025em; }
 .person-headline { margin-top: 6px; font-size: 15px; font-weight: 600; color: var(--ink-2); }
+.person-role { margin-top: 6px; font-size: 16px; font-weight: 700; }
+.person-role + .person-headline { margin-top: 2px; }
 
 .reason { margin-top: 16px; font-size: 17px; line-height: 1.5; font-weight: 700; text-wrap: balance; }
 
@@ -366,6 +368,11 @@ input[readonly] { background: var(--stock-2); color: var(--ink-2); }
 .ecard.preview { box-shadow: inset 0 4px 0 var(--attendee), 0 0 0 1px var(--stock-line); }
 .ecard-name { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
 .ecard-headline { font-size: 14px; font-weight: 600; color: var(--ink-2); }
+.ecard-role { font-size: 15px; font-weight: 700; }
+/* 입장 양식 미리보기: 직함과 회사가 둘 다 있을 때만 가운뎃점 */
+.person-role [data-preview]:not(:empty) + [data-preview]:not(:empty)::before,
+.ecard-role [data-preview]:not(:empty) + [data-preview]:not(:empty)::before { content: " · "; }
+.field-pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
 .ecard-lines { display: grid; gap: 6px; margin-top: 12px; }
 .ecard-line { display: flex; align-items: center; gap: 8px; min-height: 30px; font-size: 15px; font-weight: 700; color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
 .ecard-line[hidden] { display: none; }

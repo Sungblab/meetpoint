@@ -38,6 +38,9 @@ class Participant(Base):
     token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     name: Mapped[str] = mapped_column(String(30))
     headline: Mapped[str] = mapped_column(String(60), default="")
+    # 명찰 앞면에 모두에게 보인다. 추천에도 쓴다.
+    company: Mapped[str] = mapped_column(String(60), default="")
+    job_title: Mapped[str] = mapped_column(String(40), default="")
     about: Mapped[str] = mapped_column(Text, default="")
     # 같은 분야에서 나보다 잘하는 사람에게 묻고 싶은 것
     ask_same: Mapped[str] = mapped_column(Text, default="")

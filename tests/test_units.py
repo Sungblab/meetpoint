@@ -130,7 +130,7 @@ def test_create_all_adds_new_columns_to_old_table(tmp_path):
 
 
 def test_vcard_escapes_special_characters():
-    body = build_vcard(name="김, 하늘;", headline="대표\\CEO", phone="010-1234-5678", email="",
+    body = build_vcard(name="김, 하늘;", company="", job_title="", headline="대표\\CEO", phone="010-1234-5678", email="",
                        other="카톡 abc", note="이유\n둘째 줄")
     assert "FN:김\\, 하늘\\;" in body
     assert "TITLE:대표\\\\CEO" in body
@@ -138,3 +138,21 @@ def test_vcard_escapes_special_characters():
     assert "NOTE:이유\\n둘째 줄\\n기타 연락처: 카톡 abc" in body
     assert body.startswith("BEGIN:VCARD\r\nVERSION:3.0\r\n")
     assert body.endswith("END:VCARD\r\n")
+
+
+def test_vcard_puts_company_and_title_in_their_own_fields():
+    body = build_vcard(name="박준영", headline="밀키트 구독 2년째", company="밀키트컴퍼니", job_title="대표",
+                       phone="", email="", other="", note="")
+    assert "ORG:밀키트컴퍼니\r\n" in body
+    assert "TITLE:대표\r\n" in body
+
+
+def test_profile_sends_company_and_title_to_ai():
+    d = Profile(1, "가", "", "소개", "", "", company="밀키트컴퍼니", job_title="대표").as_prompt_dict()
+    assert d["company"] == "밀키트컴퍼니" and d["job_title"] == "대표"
+
+
+def test_heuristic_reads_job_title():
+    viewer = Profile(1, "가", "", "반찬 구독을 준비해요", "", "세무사 상담이 필요해요")
+    target = Profile(2, "나", "", "초기 스타트업을 도와요", "", "", job_title="세무사")
+    assert score_pair(viewer, target).kind == "complement"

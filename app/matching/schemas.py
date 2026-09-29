@@ -16,11 +16,15 @@ class Profile:
     ask_same: str
     ask_other: str
     version: int = 1
+    company: str = ""
+    job_title: str = ""
 
     def as_prompt_dict(self) -> dict:
         return {
             "id": self.id,
             "name": self.name,
+            "company": self.company,
+            "job_title": self.job_title,
             "headline": self.headline,
             "about": self.about,
             "ask_same": self.ask_same,
@@ -59,6 +63,8 @@ class RecommendationBatchOut(BaseModel):
 class CardOut(BaseModel):
     is_business_card: bool
     name: str
+    company: str
+    job_title: str
     headline: str
     about: str
     phone: str
@@ -104,13 +110,15 @@ CARD_SCHEMA = {
     "properties": {
         "is_business_card": {"type": "boolean"},
         "name": {"type": "string"},
+        "company": {"type": "string"},
+        "job_title": {"type": "string"},
         "headline": {"type": "string"},
         "about": {"type": "string"},
         "phone": {"type": "string"},
         "email": {"type": "string"},
         "contact": {"type": "string"},
     },
-    "required": ["is_business_card", "name", "headline", "about", "phone", "email", "contact"],
+    "required": ["is_business_card", "name", "company", "job_title", "headline", "about", "phone", "email", "contact"],
     "additionalProperties": False,
 }
 

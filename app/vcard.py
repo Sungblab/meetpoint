@@ -14,10 +14,14 @@ def _esc(value: str) -> str:
     )
 
 
-def build_vcard(*, name: str, headline: str, phone: str, email: str, other: str, note: str) -> str:
+def build_vcard(*, name: str, company: str, job_title: str, headline: str, phone: str, email: str, other: str,
+                note: str) -> str:
     lines = ["BEGIN:VCARD", "VERSION:3.0", f"N:;{_esc(name)};;;", f"FN:{_esc(name)}"]
-    if headline:
-        lines.append(f"TITLE:{_esc(headline)}")
+    if company:
+        lines.append(f"ORG:{_esc(company)}")
+    # 직함을 안 적은 사람은 한 줄 소개를 직함 칸에 둔다.
+    if job_title or headline:
+        lines.append(f"TITLE:{_esc(job_title or headline)}")
     if phone:
         lines.append(f"TEL;TYPE=CELL:{_esc(phone)}")
     if email:

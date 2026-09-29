@@ -117,12 +117,13 @@ def test_parse_drops_unknown_and_duplicate_ids_and_blanks_none():
 
 
 def test_card_request_sends_image_with_low_thinking():
-    card = ('{"is_business_card":true,"name":"홍길동","headline":"회사 · 대표","about":"회사 대표예요",'
+    card = ('{"is_business_card":true,"name":"홍길동","company":"회사","job_title":"대표","headline":"","about":"회사 대표예요",'
             '"phone":"010-1234-5678","email":"a@b.c","contact":"https://example.com"}')
     ai, fake = _client(response=_response(card))
     out = asyncio.run(ai.read_card(b"\xff\xd8\xffdata", "image/jpeg"))
     assert out.name == "홍길동"
     assert out.phone == "010-1234-5678" and out.email == "a@b.c"
+    assert out.company == "회사" and out.job_title == "대표"
     call = fake.calls[0]
     assert call["config"].thinking_config.thinking_level == types.ThinkingLevel.LOW
     image = call["contents"][0]
@@ -147,7 +148,7 @@ class FakeAI:
         }
 
     async def read_card(self, image, media_type):
-        return CardOut(is_business_card=True, name="홍길동", headline="회사 · 대표", about="소개",
+        return CardOut(is_business_card=True, name="홍길동", company="회사", job_title="대표", headline="", about="소개",
                        phone="010-1234-5678", email="a@b.c", contact="https://example.com")
 
 
@@ -210,7 +211,7 @@ def test_card_endpoint(app):
         _with_ai(app, FakeAI())
         res = a.post(f"/r/{code}/card", files={"file": ("c.jpg", jpeg, "image/jpeg")})
         assert res.status_code == 200
-        assert res.json() == {"name": "홍길동", "headline": "회사 · 대표", "about": "소개",
+        assert res.json() == {"name": "홍길동", "company": "회사", "job_title": "대표", "headline": "", "about": "소개",
                               "phone": "010-1234-5678", "email": "a@b.c", "contact": "https://example.com"}
 
         res = a.post(f"/r/{code}/card", files={"file": ("x.txt", b"hello world", "image/jpeg")})
@@ -224,7 +225,7 @@ def test_card_endpoint(app):
 def test_card_not_a_card(app):
     class NotCard(FakeAI):
         async def read_card(self, image, media_type):
-            return CardOut(is_business_card=False, name="", headline="", about="", phone="", email="", contact="")
+            return CardOut(is_business_card=False, name="", company="", job_title="", headline="", about="", phone="", email="", contact="")
 
     _with_ai(app, NotCard())
     with new_client(app) as host, new_client(app) as a:

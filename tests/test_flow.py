@@ -373,3 +373,30 @@ def test_join_form_has_ecard_fields(client):
     assert 'name="phone" type="tel"' in page
     assert 'name="email" type="email"' in page
     assert 'id="ecard-preview"' in page
+
+
+def test_company_and_title_are_public_and_rerun_matching(app):
+    with new_client(app) as host, new_client(app) as a, new_client(app) as b:
+        _, code = create_room(host)
+        join(a, code, **dict(DEV, company="밀키트컴퍼니", job_title="대표"))
+        join(b, code, **MARKETER)
+        p = state(b, code)["people"][0]
+        assert p["company"] == "밀키트컴퍼니" and p["job_title"] == "대표"
+        a.post(f"/r/{code}/me", data=dict(DEV, company="새회사", job_title="대표"))
+
+    async def read():
+        async with app.state.services.db.sessionmaker() as s:
+            p = await s.scalar(select(Participant).where(Participant.name == DEV["name"]))
+            return p.profile_version, p.company
+
+    import asyncio
+
+    assert asyncio.run(read()) == (2, "새회사")
+
+
+def test_join_form_has_company_and_title(client):
+    _, code = create_room(client)
+    page = client.get(f"/r/{code}").text
+    assert 'name="company"' in page and 'name="job_title"' in page
+    assert 'data-preview="job_title"' in page
+    assert "회사, 직함" in client.get("/privacy").text

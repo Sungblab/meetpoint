@@ -88,6 +88,8 @@ async def build_state(s, room, me: Participant) -> dict:
             {
                 "id": p.id,
                 "name": p.name,
+                "company": p.company,
+                "job_title": p.job_title,
                 "headline": p.headline,
                 "about": p.about,
                 "ask_same": p.ask_same,
@@ -200,8 +202,9 @@ async def vcard(request: Request, code: str, target_id: int):
         note = f"Meetpoint · {room.name} · {created.astimezone(KST):%Y-%m-%d}"
         if rec is not None and rec.reason:
             note += f" · 만난 이유: {rec.reason}"
-        body = build_vcard(name=target.name, headline=target.headline, phone=target.phone,
-                           email=target.email, other=target.contact, note=note)
+        body = build_vcard(name=target.name, company=target.company, job_title=target.job_title,
+                           headline=target.headline, phone=target.phone, email=target.email, other=target.contact,
+                           note=note)
         name = target.name
     return Response(body, media_type="text/vcard; charset=utf-8",
                     headers={"Content-Disposition": vcard_disposition(name), "Cache-Control": "no-store"})
