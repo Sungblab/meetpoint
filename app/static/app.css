@@ -70,7 +70,7 @@ img, svg { display: block; }
 .page {
   max-width: 760px;
   margin: 0 auto;
-  padding: 20px 16px calc(96px + env(safe-area-inset-bottom));
+  padding: 20px 16px 56px;
 }
 .page.narrow { max-width: 540px; }
 .stack { display: grid; gap: 16px; }
@@ -714,4 +714,13 @@ body.screen { min-height: 100vh; }
 .legal th { font-weight: 800; color: var(--on-table); background: var(--table-raised); white-space: nowrap; }
 .legal td { color: #d8d8d3; }
 .legal tr:last-child td { border-bottom: 0; }
+@media (max-width: 640px) {
+  .table-wrap { overflow: visible; border: 0; }
+  .legal table { min-width: 0; }
+  .legal thead { display: none; }
+  .legal tr { display: block; margin-bottom: 10px; padding: 4px 14px; border: 1px solid var(--table-line); border-radius: var(--radius-sm); }
+  .legal td { display: block; padding: 8px 0; border-bottom: 1px solid var(--table-line); }
+  .legal tr td:last-child { border-bottom: 0; }
+  .legal td::before { content: attr(data-label); display: block; margin-bottom: 2px; font-size: 12px; font-weight: 800; color: var(--on-table-2); }
+}
 .message-action { margin-top: 18px; }
