@@ -18,6 +18,8 @@ PROFILE_LIMITS = {
     "ask_same": 300,
     "ask_other": 300,
     "find_me": 60,
+    "phone": 30,
+    "email": 100,
     "contact": 100,
 }
 PROFILE_LABELS = {
@@ -27,12 +29,21 @@ PROFILE_LABELS = {
     "ask_same": "같은 분야에 묻고 싶은 것",
     "ask_other": "다른 분야에서 필요한 것",
     "find_me": "나를 찾는 법",
-    "contact": "연락처",
+    "phone": "전화번호",
+    "email": "이메일",
+    "contact": "기타 연락처",
 }
-SINGLE_LINE = {"name", "headline", "find_me", "contact"}
+SINGLE_LINE = {"name", "headline", "find_me", "phone", "email", "contact"}
 MATCHING_FIELDS = ("name", "headline", "about", "ask_same", "ask_other")
 
 _CODE_CLEAN = re.compile(r"[^A-Za-z0-9]")
+_PHONE_CHARS = re.compile(r"[0-9+\-\s()]+")
+_EMAIL = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
+
+
+def _valid_phone(value: str) -> bool:
+    digits = sum(ch.isdigit() for ch in value)
+    return bool(_PHONE_CHARS.fullmatch(value)) and 7 <= digits <= 15
 
 
 def clean_profile(form) -> tuple[dict[str, str], list[str]]:
@@ -47,6 +58,10 @@ def clean_profile(form) -> tuple[dict[str, str], list[str]]:
         errors.append("자기소개를 적어주세요.")
     if not data["ask_same"] and not data["ask_other"]:
         errors.append("같은 분야에 묻고 싶은 것과 다른 분야에서 필요한 것 중 하나는 적어주세요.")
+    if data["phone"] and not _valid_phone(data["phone"]):
+        errors.append("전화번호는 숫자와 +, -, 괄호로 적어주세요.")
+    if data["email"] and not _EMAIL.fullmatch(data["email"]):
+        errors.append("이메일 주소를 다시 확인해 주세요.")
     for key, limit in PROFILE_LIMITS.items():
         if len(data[key]) > limit:
             errors.append(f"{PROFILE_LABELS[key]}은(는) {limit}자까지 쓸 수 있어요.")

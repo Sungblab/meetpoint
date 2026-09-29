@@ -1,6 +1,8 @@
 import asyncio
 from datetime import UTC, datetime, timedelta
 
+from sqlalchemy import text
+
 from app.broker import Broker
 from app.config import Settings
 from app.db import Database
@@ -99,3 +101,24 @@ def test_purge_expired_rooms(tmp_path):
 def test_settings_ai_enabled():
     assert not Settings(_env_file=None, gemini_api_key="").ai_enabled
     assert Settings(_env_file=None, gemini_api_key="k").ai_enabled
+
+
+def test_create_all_adds_new_columns_to_old_table(tmp_path):
+    db = Database(f"sqlite+aiosqlite:///{tmp_path / 'old.db'}")
+
+    async def run():
+        async with db.engine.begin() as conn:
+            await conn.execute(text(
+                "CREATE TABLE participants (id INTEGER PRIMARY KEY, room_id INTEGER, token_hash VARCHAR(64), "
+                "name VARCHAR(30), headline VARCHAR(60), about TEXT, ask_same TEXT, ask_other TEXT, "
+                "find_me VARCHAR(60), contact VARCHAR(100), recs_status VARCHAR(10), profile_version INTEGER, "
+                "created_at DATETIME, updated_at DATETIME)"
+            ))
+            await conn.execute(text("INSERT INTO participants (id, room_id, token_hash, name) VALUES (1, 1, 'x', '가')"))
+        await db.create_all()
+        async with db.engine.connect() as conn:
+            row = (await conn.execute(text("SELECT phone, email FROM participants WHERE id = 1"))).one()
+        await db.dispose()
+        return tuple(row)
+
+    assert asyncio.run(run()) == ("", "")

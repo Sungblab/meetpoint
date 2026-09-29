@@ -289,3 +289,35 @@ def test_legal_pages(client):
     assert "개인정보 보호책임자" in client.get("/privacy").text
     assert "금지 행위" in client.get("/terms").text
     assert 'href="/privacy"' in client.get("/").text
+
+
+def test_join_validates_phone_and_email(client):
+    _, code = create_room(client)
+    res = client.post(f"/r/{code}/join", data=dict(DEV, phone="전화해", email="dev-at-example"), follow_redirects=False)
+    assert res.status_code == 400
+    assert "전화번호는" in res.text
+    assert "이메일 주소를" in res.text
+
+
+def test_join_accepts_common_phone_formats(app):
+    phones = ["010-1234-5678", "010 1234 5678", "+82 10-1234-5678", "02-123-4567", "(02) 123-4567"]
+    for i, phone in enumerate(phones):
+        with new_client(app) as c:
+            _, code = create_room(c, name=f"방 {i}")
+            join(c, code, **dict(DEV, phone=phone, email="Dev@Example.com"))
+
+
+def test_phone_only_edit_keeps_version(app):
+    with new_client(app) as host, new_client(app) as a:
+        _, code = create_room(host)
+        join(a, code, **DEV)
+        a.post(f"/r/{code}/me", data=dict(DEV, phone="010-9999-0000", email="new@example.com"))
+
+    async def read():
+        async with app.state.services.db.sessionmaker() as s:
+            p = await s.scalar(select(Participant))
+            return p.profile_version, p.phone, p.email
+
+    import asyncio
+
+    assert asyncio.run(read()) == (1, "010-9999-0000", "new@example.com")
