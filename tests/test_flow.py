@@ -360,3 +360,11 @@ def test_vcard_only_for_mutual_connections(app):
 def test_vcard_requires_participant(client):
     _, code = create_room(client)
     assert client.get(f"/r/{code}/api/vcard/1").status_code == 401
+
+
+def test_join_form_has_ecard_fields(client):
+    _, code = create_room(client)
+    page = client.get(f"/r/{code}").text
+    assert 'name="phone" type="tel"' in page
+    assert 'name="email" type="email"' in page
+    assert 'id="ecard-preview"' in page

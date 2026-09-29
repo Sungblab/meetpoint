@@ -75,10 +75,34 @@
         </label>
       </fieldset>
 
-      <label class="field">
-        <span class="label">연락처 <span class="optional">서로 만나고 싶어요를 누른 사람에게만 보여요</span></span>
-        <input name="contact" maxlength="100" placeholder="이메일, 카카오톡 ID, 링크드인 주소 등" value="{{ values.contact or '' }}">
-      </label>
+      <fieldset class="ecard-fields">
+        <legend class="label">전자 명함 <span class="optional">서로 만나고 싶어요를 누른 사람에게만 보여요</span></legend>
+        <label class="field">
+          <span class="label">전화번호</span>
+          <input name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="30" placeholder="010-1234-5678" value="{{ values.phone or '' }}">
+        </label>
+        <label class="field">
+          <span class="label">이메일</span>
+          <input name="email" type="email" autocomplete="email" maxlength="100" placeholder="name@example.com" value="{{ values.email or '' }}">
+        </label>
+        <label class="field">
+          <span class="label">기타 연락처</span>
+          <input name="contact" maxlength="100" placeholder="카카오톡 ID, 링크드인 주소 등" value="{{ values.contact or '' }}">
+        </label>
+        <div class="ecard-preview" id="ecard-preview" aria-hidden="true">
+          <p class="preview-label">서로 연결되면 상대에게 이렇게 보여요</p>
+          <div class="ecard preview">
+            <p class="ecard-name" data-preview="name" data-blank="이름">{{ values.name or '이름' }}</p>
+            <p class="ecard-headline" data-preview="headline" data-blank="한 줄 소개">{{ values.headline or '한 줄 소개' }}</p>
+            <div class="ecard-lines">
+              <p class="ecard-line" data-preview-wrap="phone"{% if not values.phone %} hidden{% endif %}><svg class="icon"><use href="#i-phone"/></svg><span data-preview="phone">{{ values.phone or '' }}</span></p>
+              <p class="ecard-line" data-preview-wrap="email"{% if not values.email %} hidden{% endif %}><svg class="icon"><use href="#i-mail"/></svg><span data-preview="email">{{ values.email or '' }}</span></p>
+              <p class="ecard-line" data-preview-wrap="contact"{% if not values.contact %} hidden{% endif %}><svg class="icon"><use href="#i-link"/></svg><span data-preview="contact">{{ values.contact or '' }}</span></p>
+            </div>
+            <span class="ecard-brand">Meetpoint</span>
+          </div>
+        </div>
+      </fieldset>
 
       <div class="form-actions">
         <button class="btn primary block" type="submit">{{ '저장하기' if mode == 'edit' else '입장하기' }}</button>
@@ -100,6 +124,6 @@
 </main>
 {% endblock %}
 {% block scripts %}
-<script src="/static/badge.js?v=1" defer></script>
-{% if ai_enabled %}<script src="/static/join.js?v=2" data-code="{{ room.code }}" defer></script>{% endif %}
+<script src="/static/badge.js?v=2" defer></script>
+{% if ai_enabled %}<script src="/static/join.js?v=3" data-code="{{ room.code }}" defer></script>{% endif %}
 {% endblock %}
