@@ -48,11 +48,11 @@
     <form method="post" action="/r/{{ room.code }}/{{ 'me' if mode == 'edit' else 'join' }}" class="form" id="profile-form">
       <label class="field">
         <span class="label">이름</span>
-        <input name="name" required maxlength="30" autocomplete="name" placeholder="예: 한서윤" value="{{ values.name or '' }}">
+        <input name="name" required maxlength="30" autocomplete="name" placeholder="예: 김하늘" value="{{ values.name or '' }}">
       </label>
       <label class="field">
         <span class="label">한 줄 소개 <span class="optional">선택</span></span>
-        <input name="headline" maxlength="60" placeholder="예: 사이드 프로젝트 중인 프론트엔드 개발자" value="{{ values.headline or '' }}">
+        <input name="headline" maxlength="60" placeholder="예: 동네 반찬 구독 서비스 준비 중" value="{{ values.headline or '' }}">
       </label>
       <label class="field">
         <span class="label">현장에서 나를 찾는 법 <span class="optional">모두에게 보여요</span></span>
@@ -60,18 +60,18 @@
       </label>
       <label class="field">
         <span class="label">자기소개</span>
-        <textarea name="about" required rows="3" maxlength="400" placeholder="예: 회사에서는 프론트엔드를 하고, 주말엔 AI 요약 서비스를 만들고 있어요.">{{ values.about or '' }}</textarea>
+        <textarea name="about" required rows="3" maxlength="400" placeholder="예: 회사를 다니며 반찬 구독 서비스를 준비하고 있어요. 테스트 판매를 두 번 해 봤어요.">{{ values.about or '' }}</textarea>
       </label>
 
       <fieldset class="asks">
         <legend class="label">오늘 누구를 만나고 싶나요? <span class="optional">하나 이상</span></legend>
         <label class="field ask common">
           <span class="ask-title">같은 분야 고수에게 묻고 싶은 것</span>
-          <textarea name="ask_same" rows="2" maxlength="300" placeholder="예: LLM API 비용을 어떻게 줄이는지 궁금해요">{{ values.ask_same or '' }}</textarea>
+          <textarea name="ask_same" rows="2" maxlength="300" placeholder="예: 예비창업패키지 서류를 어떻게 썼는지 궁금해요">{{ values.ask_same or '' }}</textarea>
         </label>
         <label class="field ask complement">
           <span class="ask-title">다른 분야에서 필요한 것</span>
-          <textarea name="ask_other" rows="2" maxlength="300" placeholder="예: 첫 사용자 100명을 모아 본 마케터를 만나고 싶어요">{{ values.ask_other or '' }}</textarea>
+          <textarea name="ask_other" rows="2" maxlength="300" placeholder="예: 법인 설립과 세금을 물어볼 사람을 찾아요">{{ values.ask_other or '' }}</textarea>
         </label>
       </fieldset>
 

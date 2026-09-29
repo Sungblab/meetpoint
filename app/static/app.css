@@ -528,6 +528,13 @@ input[readonly] { background: var(--stock-2); color: var(--ink-2); }
 .rack .badge .person-body { padding-bottom: 18px; }
 .rack .badge .person-name { font-size: 28px; }
 .rack-label { font-size: 13px; font-weight: 700; color: var(--on-table-2); }
+.rack-label + .badge { margin-top: -4px; }
+.my-asks { display: grid; gap: 10px; margin-top: 14px; }
+.ask-row { position: relative; display: grid; gap: 2px; padding-left: 18px; }
+.ask-row::before { content: ""; position: absolute; top: 4px; left: 0; width: 10px; height: 10px; border-radius: 3px; background: var(--same); }
+.ask-row.complement::before { background: var(--other); }
+.ask-row dt { font-size: 12px; font-weight: 800; color: var(--ink-3); }
+.ask-row dd { font-size: 15px; font-weight: 700; }
 .rack .badge-back { padding: 14px 18px 16px; }
 
 .home-forms { display: grid; gap: 16px; margin-top: 36px; }
@@ -638,7 +645,8 @@ body.screen { min-height: 100vh; }
   .home-copy { padding-top: 24px; }
   .h1 { font-size: 52px; }
   .rack { grid-template-columns: 1fr 1fr; align-items: start; }
-  .rack .badge:first-of-type { grid-column: 1 / -1; }
+  .rack > * { grid-column: 1 / -1; }
+  .rack > .badge.half { grid-column: auto; }
 }
 
 @media (max-width: 759px) {
