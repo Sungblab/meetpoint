@@ -289,6 +289,9 @@ def test_legal_pages(client):
     assert "개인정보 보호책임자" in client.get("/privacy").text
     assert "금지 행위" in client.get("/terms").text
     assert 'href="/privacy"' in client.get("/").text
+    privacy = client.get("/privacy").text
+    assert "전화번호, 이메일, 기타 연락처" in privacy
+    assert "휴대폰 연락처에 저장할 수 있습니다" in privacy
 
 
 def test_join_validates_phone_and_email(client):
