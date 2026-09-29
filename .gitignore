@@ -13,3 +13,4 @@ backups/
 .impeccable/review/
 .impeccable/questions/
 .impeccable/direction-round-*.json
+.claude/launch.json
