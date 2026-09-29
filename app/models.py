@@ -18,6 +18,10 @@ class Room(Base):
     host_token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     name: Mapped[str] = mapped_column(String(80))
     description: Mapped[str] = mapped_column(String(300), default="")
+    # 관리 주소를 보내고 방 운영 안내를 할 주최자 이메일. 방을 지우면 같이 지워진다.
+    host_email: Mapped[str] = mapped_column(String(254), default="")
+    # 소식 받기에 동의한 시각(ISO). 비어 있으면 동의하지 않은 것이다. 광고성 메일은 여기 값이 있을 때만 보낸다.
+    marketing_consent_at: Mapped[str] = mapped_column(String(40), default="")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     closed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 

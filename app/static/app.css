@@ -196,6 +196,8 @@ img, svg { display: block; }
 .field { display: grid; gap: 8px; }
 .label { font-size: 14px; font-weight: 800; color: var(--ink); }
 .optional { font-size: 13px; font-weight: 600; color: var(--ink-3); margin-left: 4px; }
+.check { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; font-weight: 600; line-height: 1.5; color: var(--ink-2); cursor: pointer; }
+.check input { flex: none; width: 20px; height: 20px; min-height: 0; margin: 1px 0 0; padding: 0; accent-color: var(--ink); }
 
 input,
 textarea {
@@ -709,18 +711,26 @@ body.screen { min-height: 100vh; }
 .legal ul { display: grid; gap: 6px; padding-left: 20px; list-style: disc; }
 .legal a { color: var(--on-table); }
 .table-wrap { overflow-x: auto; margin: 12px 0; border: 1px solid var(--table-line); border-radius: var(--radius-sm); }
-.legal table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 14px; line-height: 1.6; }
-.legal th, .legal td { padding: 10px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--table-line); }
-.legal th { font-weight: 800; color: var(--on-table); background: var(--table-raised); white-space: nowrap; }
-.legal td { color: #d8d8d3; }
-.legal tr:last-child td { border-bottom: 0; }
+.table-wrap table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 14px; line-height: 1.6; }
+.table-wrap th, .table-wrap td { padding: 10px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--table-line); }
+.table-wrap th { font-weight: 800; color: var(--on-table); background: var(--table-raised); white-space: nowrap; }
+.table-wrap td { color: #d8d8d3; }
+.table-wrap tr:last-child td { border-bottom: 0; }
 @media (max-width: 640px) {
   .table-wrap { overflow: visible; border: 0; }
-  .legal table { min-width: 0; }
-  .legal thead { display: none; }
-  .legal tr { display: block; margin-bottom: 10px; padding: 4px 14px; border: 1px solid var(--table-line); border-radius: var(--radius-sm); }
-  .legal td { display: block; padding: 8px 0; border-bottom: 1px solid var(--table-line); }
-  .legal tr td:last-child { border-bottom: 0; }
-  .legal td::before { content: attr(data-label); display: block; margin-bottom: 2px; font-size: 12px; font-weight: 800; color: var(--on-table-2); }
+  .table-wrap table { min-width: 0; }
+  .table-wrap thead { display: none; }
+  .table-wrap tr { display: block; margin-bottom: 10px; padding: 4px 14px; border: 1px solid var(--table-line); border-radius: var(--radius-sm); }
+  .table-wrap td { display: block; padding: 8px 0; border-bottom: 1px solid var(--table-line); }
+  .table-wrap tr td:last-child { border-bottom: 0; }
+  .table-wrap td::before { content: attr(data-label); display: block; margin-bottom: 2px; font-size: 12px; font-weight: 800; color: var(--on-table-2); }
 }
 .message-action { margin-top: 18px; }
+
+/* ---------- 운영자 화면 ---------- */
+
+.page.wide { max-width: 1120px; }
+.admin-section { margin-top: 36px; }
+.admin-section .small { margin-top: 4px; }
+.admin-empty { margin-top: 12px; }
+.admin-section td:first-child, .admin-section td.num { white-space: nowrap; }

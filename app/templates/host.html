@@ -11,7 +11,7 @@
     <div class="band"><span>주최자 전용</span></div>
     <div class="sheet-body">
       <h2 class="h3">이 관리 주소를 저장해 두세요</h2>
-      <p class="muted small">잃어버리면 이 화면에 다시 들어올 수 없어요. 참가자에게는 보여주지 마세요.</p>
+      <p class="muted small">{% if mail_enabled and room.host_email %}{{ room.host_email }}로도 보냈어요. {% endif %}잃어버리면 이 화면에 다시 들어올 수 없어요. 참가자에게는 보여주지 마세요.</p>
       <div class="copy-row">
         <input readonly value="{{ host_url }}" id="host-url" aria-label="관리 주소">
         <button class="btn secondary" data-copy="host-url">복사</button>

@@ -11,7 +11,7 @@
 
 ## 흐름
 
-1. 주최자가 첫 화면에서 방을 만들면 참가 QR과 관리 주소를 받습니다.
+1. 주최자가 첫 화면에서 이메일을 적고 방을 만들면 참가 QR과 관리 주소를 받습니다. 관리 주소는 메일로도 갑니다.
 2. 주최자는 프로젝터 화면을 띄웁니다. 이 화면에는 관리 주소가 나오지 않습니다.
 3. 참가자는 QR로 들어와 이름, 자기소개, 같은 분야에 묻고 싶은 것, 다른 분야에서 필요한 것을 적습니다. 명함 사진으로 앞부분을 채울 수 있습니다.
 4. 방 화면에 모든 참가자가 추천순으로 보입니다. 새 사람이 들어오면 새로고침 없이 바로 나타납니다.
@@ -26,6 +26,7 @@
 | `/s/{코드}` | 프로젝터 | 큰 QR과 참가자 수 |
 | `/r/{코드}` | 참가자 | 입장 양식, 들어온 뒤에는 추천 목록 |
 | `/r/{코드}/me` | 참가자 | 내 정보 고치기, 내 정보 지우기 |
+| `/admin` | 운영자 | 주최자별 방 수, 모든 방과 참가자, 연결 수. `ADMIN_PASSWORD`로 열고, 비워두면 꺼집니다. 연락처는 보여주지 않습니다 |
 
 ## 추천 방식
 
@@ -40,7 +41,7 @@
 ## 개인정보
 
 - 소개와 찾는 법은 같은 방 참가자에게 보입니다. 연락처는 서로 연결된 사람에게만 보입니다.
-- 방은 만든 지 30일이 지나면 참가자, 추천, 연결 기록과 함께 자동으로 지워집니다. `ROOM_RETENTION_DAYS`로 바꿉니다.
+- 방과 참가자 정보는 참가자나 주최자가 지울 때까지 보관합니다. 2026-09-30 전에 만든 방만 안내했던 대로 30일 뒤 자동으로 지웁니다.
 - 참가자는 언제든 "내 정보 지우기"로, 주최자는 "방 지우기"로 바로 지울 수 있습니다.
 - 백업 스크립트는 덤프를 7일간 보관하므로, 지운 데이터가 백업에는 최대 7일 남습니다.
 - 참가자가 적은 내용과 명함 사진은 추천을 위해 Gemini API로 보냅니다. 무료 등급 키는 Google이 입력을 서비스 개선에 쓸 수 있으니, 실제 행사에는 결제가 연결된 프로젝트의 키를 씁니다.
@@ -80,7 +81,7 @@ cd ~/apps/meetpoint
 
 # 2. 설정
 cp .env.example .env
-nano .env   # POSTGRES_PASSWORD, GEMINI_API_KEY, PUBLIC_BASE_URL, APP_PORT
+nano .env   # POSTGRES_PASSWORD, GEMINI_API_KEY, ADMIN_PASSWORD, SMTP_USER, SMTP_PASSWORD, PUBLIC_BASE_URL, APP_PORT
 
 # 3. 실행
 docker compose up -d --build --wait
@@ -126,13 +127,14 @@ thinking level을 받지 않는 `gemini-2.5-flash` 같은 모델을 쓰려면 `A
 
 ```
 app/
-  main.py            앱 생성, 시작 시 테이블 생성과 오래된 방 정리
+  main.py            앱 생성, 시작 시 테이블 생성과 30일 약속으로 만든 옛 방 정리
   config.py          환경 변수 설정
   models.py          Room, Participant, Recommendation, Like
   broker.py          방 단위 실시간 알림
   routes/pages.py    입장, 내 정보, 명함 읽기, 프로젝터 화면
   routes/api.py      방 상태, 만나고 싶어요, SSE
   routes/host.py     주최자 화면
+  routes/admin.py    운영자 화면
   matching/ai.py     Gemini 호출과 응답 검증
   matching/heuristic.py  키워드 대체 추천
   matching/service.py    추천 작업 실행과 저장

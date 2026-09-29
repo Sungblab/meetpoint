@@ -52,9 +52,9 @@ def new_client(app) -> TestClient:
     return TestClient(app)
 
 
-def create_room(client: TestClient, name: str = "자사몰 특강") -> tuple[str, str]:
+def create_room(client: TestClient, name: str = "자사몰 특강", **fields) -> tuple[str, str]:
     """(host_token, room_code)"""
-    res = client.post("/rooms", data={"name": name}, follow_redirects=False)
+    res = client.post("/rooms", data={"name": name, "email": "host@example.com", **fields}, follow_redirects=False)
     assert res.status_code == 303, res.text
     token = res.headers["location"].rsplit("/", 1)[-1]
     page = client.get(f"/h/{token}")

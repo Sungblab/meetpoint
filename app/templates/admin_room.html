@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}운영자 · {{ room.name }}{% endblock %}
+{% block body %}
+<main class="page wide">
+  <header class="host-top">
+    <a class="brand" href="/admin">운영자 화면</a>
+    <h1 class="h2">{{ room.name }}</h1>
+    <p class="muted small">코드 {{ room.code }} · {{ room.created_at | kst }} 만듦 · 입장 {{ '마감' if room.is_closed else '열림' }}{% if room.host_email %} · 주최자 {{ room.host_email }}{% endif %}</p>
+    {% if room.description %}<p class="muted small">{{ room.description }}</p>{% endif %}
+  </header>
+
+  <dl class="stats">
+    <div><dt>참가자</dt><dd>{{ people | length }}</dd></div>
+    <div><dt>만나고 싶어요</dt><dd>{{ likes }}</dd></div>
+    <div><dt>서로 연결</dt><dd>{{ pairs | length }}</dd></div>
+  </dl>
+
+  <section class="admin-section">
+    <h2 class="h3">참가자</h2>
+    <p class="muted small">연락처는 보여주지 않아요.</p>
+    {% if people %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>이름</th><th>한 줄 소개</th><th>자기소개</th><th>같은 분야에 묻고 싶은 것</th><th>다른 분야에서 필요한 것</th><th>찾는 법</th><th>연결</th><th>들어온 시각</th></tr></thead>
+        <tbody>
+          {% for p in people %}
+          <tr>
+            <td data-label="이름">{{ p.name }}</td>
+            <td data-label="한 줄 소개">{{ p.headline }}</td>
+            <td data-label="자기소개">{{ p.about }}</td>
+            <td data-label="같은 분야에 묻고 싶은 것">{{ p.ask_same }}</td>
+            <td data-label="다른 분야에서 필요한 것">{{ p.ask_other }}</td>
+            <td data-label="찾는 법">{{ p.find_me }}</td>
+            <td data-label="연결" class="num">{{ links[p.id] }}</td>
+            <td data-label="들어온 시각" class="num">{{ p.created_at | kst }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="muted admin-empty">아직 들어온 사람이 없어요.</p>
+    {% endif %}
+  </section>
+
+  <section class="admin-section">
+    <h2 class="h3">서로 연결된 사람</h2>
+    {% if pairs %}
+    <ul class="people-mini">
+      {% for a, b in pairs %}<li><strong>{{ a }}</strong><span class="muted">·</span><strong>{{ b }}</strong></li>{% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted admin-empty">아직 없어요.</p>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}

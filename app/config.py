@@ -12,6 +12,18 @@ class Settings(BaseSettings):
     # QR과 공유 링크에 쓸 공개 주소. 비워두면 요청 주소를 그대로 쓴다.
     public_base_url: str = ""
 
+    # 운영자 화면(/admin) 비밀번호. 비워두면 운영자 화면이 꺼진다.
+    admin_password: str = ""
+
+    # 방을 만들면 관리 주소를 주최자 이메일로 보낸다. smtp_host를 비워두면 보내지 않는다.
+    # Gmail은 smtp.gmail.com, 587, 계정 주소와 앱 비밀번호.
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    # 보내는 주소. 비워두면 smtp_user.
+    mail_from: str = ""
+
     gemini_api_key: str = ""
     ai_model: str = "gemini-3.8-flash"
     # Gemini thinking_level(minimal, low, medium, high). 현장에서는 기다리는 시간이 중요해서 낮게 둔다.
@@ -23,7 +35,6 @@ class Settings(BaseSettings):
     ai_timeout_seconds: float = 90.0
 
     max_participants: int = 300
-    room_retention_days: int = 30
     max_card_bytes: int = 5 * 1024 * 1024
 
     # 테스트에서만 켠다. 추천 계산을 백그라운드가 아니라 요청 안에서 끝낸다.
@@ -32,6 +43,10 @@ class Settings(BaseSettings):
     @property
     def ai_enabled(self) -> bool:
         return bool(self.gemini_api_key)
+
+    @property
+    def mail_enabled(self) -> bool:
+        return bool(self.smtp_host)
 
 
 @lru_cache

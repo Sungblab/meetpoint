@@ -169,9 +169,14 @@ class MatchingService:
             await s.commit()
 
 
-async def purge_expired_rooms(db: Database, retention_days: int) -> int:
-    """보관 기간이 지난 방과 그 안의 모든 참가자 정보를 지운다."""
-    cutoff = datetime.now(UTC) - timedelta(days=retention_days)
+# 이 시각(2026-09-30 00:00 KST) 전에 만든 방은 "30일 뒤 지운다"는 안내를 보고 들어왔으니 약속대로 지운다.
+# 그 뒤로 만든 방은 지우지 않는다. 2026-10-30이 지나면 지울 방이 없으니 이 함수와 호출을 지워도 된다.
+LEGACY_BEFORE = datetime(2026, 9, 29, 15, tzinfo=UTC)
+
+
+async def purge_legacy_rooms(db: Database, legacy_before: datetime = LEGACY_BEFORE) -> int:
+    """30일 보관을 약속하고 만든 방 중 30일이 지난 방과 그 안의 모든 참가자 정보를 지운다."""
+    cutoff = min(legacy_before, datetime.now(UTC) - timedelta(days=30))
     async with db.sessionmaker() as s:
         ids = (await s.scalars(select(Room.id).where(Room.created_at < cutoff))).all()
         for room_id in ids:

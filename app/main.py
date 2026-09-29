@@ -11,8 +11,8 @@ from .broker import Broker
 from .config import Settings, get_settings
 from .db import Database
 from .matching.ai import AIClient
-from .matching.service import MatchingService, purge_expired_rooms
-from .routes import api, host, pages
+from .matching.service import MatchingService, purge_legacy_rooms
+from .routes import admin, api, host, pages
 from .web import BASE_DIR, Services
 
 log = logging.getLogger("meetpoint")
@@ -39,9 +39,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     async def purge_once() -> None:
         try:
-            removed = await purge_expired_rooms(db, settings.room_retention_days)
+            removed = await purge_legacy_rooms(db)
             if removed:
-                log.info("purged %s expired rooms", removed)
+                log.info("purged %s legacy rooms", removed)
         except Exception:
             log.exception("purge failed")
 
@@ -73,6 +73,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(pages.router)
     app.include_router(host.router)
     app.include_router(api.router)
+    app.include_router(admin.router)
 
     @app.get("/health", include_in_schema=False)
     async def health() -> JSONResponse:

@@ -6,7 +6,7 @@ from app.config import Settings
 from app.db import Database
 from app.matching.heuristic import score_pair
 from app.matching.schemas import Profile
-from app.matching.service import purge_expired_rooms
+from app.matching.service import purge_legacy_rooms
 from app.models import Participant, Room
 from app.ratelimit import RateLimiter
 
@@ -72,27 +72,31 @@ def test_rate_limiter():
     assert limiter.allow("other")
 
 
-def test_purge_expired_rooms(tmp_path):
+def test_purge_only_legacy_rooms(tmp_path):
+    now = datetime.now(UTC)
+
     async def run():
         db = Database(f"sqlite+aiosqlite:///{tmp_path / 'p.db'}")
         await db.create_all()
         async with db.sessionmaker() as s:
-            old = Room(code="OLD111", host_token_hash="a" * 64, name="old", created_at=datetime.now(UTC) - timedelta(days=40))
-            new = Room(code="NEW111", host_token_hash="b" * 64, name="new")
-            s.add_all([old, new])
+            legacy = Room(code="OLD111", host_token_hash="a" * 64, name="old", created_at=now - timedelta(days=40))
+            kept = Room(code="KEEP11", host_token_hash="b" * 64, name="kept", created_at=now - timedelta(days=32))
+            new = Room(code="NEW111", host_token_hash="c" * 64, name="new")
+            s.add_all([legacy, kept, new])
             await s.flush()
-            s.add(Participant(room_id=old.id, token_hash="c" * 64, name="x"))
+            s.add(Participant(room_id=legacy.id, token_hash="d" * 64, name="x"))
             await s.commit()
-        removed = await purge_expired_rooms(db, 30)
+        # 35일 전부터는 "지우지 않는다"는 안내로 만든 방이라고 친다.
+        removed = await purge_legacy_rooms(db, legacy_before=now - timedelta(days=35))
         async with db.sessionmaker() as s:
             rooms = (await s.execute(Room.__table__.select())).all()
             people = (await s.execute(Participant.__table__.select())).all()
         await db.dispose()
-        return removed, [r.code for r in rooms], people
+        return removed, {r.code for r in rooms}, people
 
     removed, codes, people = asyncio.run(run())
     assert removed == 1
-    assert codes == ["NEW111"]
+    assert codes == {"KEEP11", "NEW111"}
     assert people == []
 
 

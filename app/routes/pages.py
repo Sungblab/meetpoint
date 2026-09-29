@@ -1,9 +1,10 @@
 import re
 
-from fastapi import APIRouter, File, Request, UploadFile
+from fastapi import APIRouter, BackgroundTasks, File, Request, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from .. import repo
+from ..mail import send_mail
 from ..matching.ai import AIUnavailable
 from ..models import Participant, Room, utcnow
 from ..security import hash_token, new_room_code, new_token, participant_cookie_name
@@ -33,6 +34,7 @@ SINGLE_LINE = {"name", "headline", "find_me", "contact"}
 MATCHING_FIELDS = ("name", "headline", "about", "ask_same", "ask_other")
 
 _CODE_CLEAN = re.compile(r"[^A-Za-z0-9]")
+_EMAIL = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
 
 
 def clean_profile(form) -> tuple[dict[str, str], list[str]]:
@@ -54,11 +56,11 @@ def clean_profile(form) -> tuple[dict[str, str], list[str]]:
 
 
 def _set_participant_cookie(response: Response, request: Request, code: str, token: str) -> None:
-    settings = services(request).settings
     response.set_cookie(
         participant_cookie_name(code),
         token,
-        max_age=settings.room_retention_days * 86400,
+        # 방을 자동으로 지우지 않으니, 1년 동안 내 명찰을 알아보고 고치거나 지울 수 있게 한다.
+        max_age=365 * 86400,
         path=f"/r/{code}",
         httponly=True,
         samesite="lax",
@@ -67,7 +69,7 @@ def _set_participant_cookie(response: Response, request: Request, code: str, tok
 
 
 def _not_found(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse(request, "message.html", {"title": "방을 찾을 수 없어요", "body": "QR이나 주소를 다시 확인해 주세요. 보관 기간이 지나 지워진 방일 수도 있어요."}, status_code=404)
+    return templates.TemplateResponse(request, "message.html", {"title": "방을 찾을 수 없어요", "body": "QR이나 주소를 다시 확인해 주세요. 지워진 방일 수도 있어요."}, status_code=404)
 
 
 async def current_participant(request: Request, s, room: Room) -> Participant | None:
@@ -77,7 +79,8 @@ async def current_participant(request: Request, s, room: Room) -> Participant | 
 
 @router.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse(request, "index.html", {"error": None, "values": {}})
+    mail = services(request).settings.mail_enabled
+    return templates.TemplateResponse(request, "index.html", {"error": None, "values": {}, "mail_enabled": mail})
 
 
 @router.get("/privacy", response_class=HTMLResponse)
@@ -104,13 +107,18 @@ async def create_room(request: Request):
     form = await request.form()
     name = " ".join(str(form.get("name") or "").split())
     description = str(form.get("description") or "").strip()
-    values = {"name": name, "description": description}
+    email = str(form.get("email") or "").strip().lower()
+    marketing = form.get("marketing") == "1"
+    values = {"name": name, "description": description, "email": email, "marketing": marketing}
 
     def fail(msg: str, status: int = 400):
-        return templates.TemplateResponse(request, "index.html", {"error": msg, "values": values}, status_code=status)
+        ctx = {"error": msg, "values": values, "mail_enabled": svc.settings.mail_enabled}
+        return templates.TemplateResponse(request, "index.html", ctx, status_code=status)
 
     if not name:
         return fail("행사 이름을 적어주세요.")
+    if len(email) > 254 or not _EMAIL.fullmatch(email):
+        return fail("관리 주소를 받을 이메일을 다시 확인해 주세요.")
     if len(name) > 80 or len(description) > 300:
         return fail("행사 이름은 80자, 설명은 300자까지 쓸 수 있어요.")
     if not svc.room_limiter.allow(client_ip(request)):
@@ -122,10 +130,28 @@ async def create_room(request: Request):
             code = new_room_code()
             if await repo.room_by_code(s, code) is None:
                 break
-        room = Room(code=code, host_token_hash=hash_token(token), name=name, description=description)
+        room = Room(
+            code=code,
+            host_token_hash=hash_token(token),
+            name=name,
+            description=description,
+            host_email=email,
+            marketing_consent_at=utcnow().isoformat() if marketing else "",
+        )
         s.add(room)
         await s.commit()
-    return RedirectResponse(f"/h/{token}", status_code=303)
+    background = BackgroundTasks()
+    if svc.settings.mail_enabled:
+        base = public_base(request)
+        body = (
+            f"{name} 방을 만들었어요.\n\n"
+            f"관리 주소 (주최자 전용이에요. 참가자에게 보여주지 마세요.)\n{base}/h/{token}\n\n"
+            f"참가 주소\n{base}/r/{code}\n\n"
+            "관리 주소에서 참가 QR과 프로젝터 화면을 열고, 입장을 마감하거나 방을 지울 수 있어요.\n"
+            "이 메일은 Meetpoint에서 방을 만들 때 적은 이메일로 보냈어요."
+        )
+        background.add_task(send_mail, svc.settings, email, f"[Meetpoint] {name} 관리 주소", body)
+    return RedirectResponse(f"/h/{token}", status_code=303, background=background)
 
 
 @router.get("/r/{code}", response_class=HTMLResponse)

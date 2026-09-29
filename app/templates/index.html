@@ -71,12 +71,20 @@
           <input name="name" required maxlength="80" placeholder="예: 초기 창업자 네트워킹 데이" value="{{ values.name or '' }}">
         </label>
         <label class="field">
+          <span class="label">이메일</span>
+          <input name="email" type="email" required maxlength="254" autocomplete="email" inputmode="email" placeholder="관리 주소를 받을 이메일" value="{{ values.email or '' }}">
+        </label>
+        <label class="field">
           <span class="label">설명 <span class="optional">선택</span></span>
           <textarea name="description" rows="2" maxlength="300" placeholder="참가자에게 보여줄 한두 줄 안내">{{ values.description or '' }}</textarea>
         </label>
+        <label class="check">
+          <input type="checkbox" name="marketing" value="1"{% if values.marketing %} checked{% endif %}>
+          <span>Meetpoint 새 기능과 이용 제안을 메일로 받을게요 <span class="optional">선택</span></span>
+        </label>
         <button class="btn primary block" type="submit">방 만들고 QR 받기</button>
       </form>
-      <p class="hint">로그인은 필요 없어요.<br>다음 화면의 관리 주소만 저장해 두세요.</p>
+      <p class="hint">로그인은 필요 없어요. {% if mail_enabled %}관리 주소는 다음 화면과 메일로 드려요.{% else %}다음 화면의 관리 주소를 저장해 두세요.{% endif %}<br>이메일은 관리 주소 전송과 방 운영 안내에 쓰고, 방을 지우면 함께 지워요. <a href="/privacy" target="_blank">개인정보 처리방침</a></p>
     </section>
 
     <section class="desk">

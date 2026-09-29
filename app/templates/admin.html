@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}운영자 · Meetpoint{% endblock %}
+{% block body %}
+<main class="page wide">
+  <header class="host-top">
+    <a class="brand" href="/">Meetpoint</a>
+    <h1 class="h2">운영자 화면</h1>
+  </header>
+
+  <dl class="stats">
+    <div><dt>방</dt><dd>{{ totals[0] }}</dd></div>
+    <div><dt>참가자</dt><dd>{{ totals[1] }}</dd></div>
+    <div><dt>서로 연결</dt><dd>{{ totals[2] }}</dd></div>
+  </dl>
+
+  <section class="admin-section">
+    <h2 class="h3">주최자 {{ hosts | length }}명</h2>
+    <p class="muted small">방을 두 번 이상 만든 주최자가 위에 와요. 홍보 메일은 소식 받기에 동의한 주최자에게만 보낼 수 있어요.</p>
+    {% if hosts %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>이메일</th><th>방</th><th>참가자</th><th>마지막 방</th><th>소식 받기</th></tr></thead>
+        <tbody>
+          {% for h in hosts %}
+          <tr>
+            <td data-label="이메일">{{ h.email or '이메일 없음(예전 방)' }}</td>
+            <td data-label="방" class="num">{{ h.rooms }}</td>
+            <td data-label="참가자" class="num">{{ h.people }}</td>
+            <td data-label="마지막 방" class="num">{{ h.last | kst }}</td>
+            <td data-label="소식 받기">{{ '동의' if h.marketing else '-' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="muted admin-empty">아직 없어요.</p>
+    {% endif %}
+  </section>
+
+  <section class="admin-section">
+    <h2 class="h3">방</h2>
+    {% if rooms %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>행사</th><th>주최자</th><th>코드</th><th>만든 시각</th><th>참가자</th><th>연결</th><th>입장</th></tr></thead>
+        <tbody>
+          {% for room in rooms %}
+          <tr>
+            <td data-label="행사"><a href="/admin/r/{{ room.code }}">{{ room.name }}</a></td>
+            <td data-label="주최자">{{ room.host_email }}</td>
+            <td data-label="코드">{{ room.code }}</td>
+            <td data-label="만든 시각" class="num">{{ room.created_at | kst }}</td>
+            <td data-label="참가자" class="num">{{ people.get(room.id, 0) }}</td>
+            <td data-label="연결" class="num">{{ matches.get(room.id, 0) }}</td>
+            <td data-label="입장">{{ '마감' if room.is_closed else '열림' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="muted admin-empty">아직 만든 방이 없어요.</p>
+    {% endif %}
+  </section>
+
+  <section class="admin-section">
+    <h2 class="h3">최근 들어온 사람</h2>
+    <p class="muted small">최근 50명. 연락처는 보여주지 않아요.</p>
+    {% if recent %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>이름</th><th>한 줄 소개</th><th>행사</th><th>들어온 시각</th></tr></thead>
+        <tbody>
+          {% for p, room in recent %}
+          <tr>
+            <td data-label="이름">{{ p.name }}</td>
+            <td data-label="한 줄 소개">{{ p.headline }}</td>
+            <td data-label="행사"><a href="/admin/r/{{ room.code }}">{{ room.name }}</a></td>
+            <td data-label="들어온 시각" class="num">{{ p.created_at | kst }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="muted admin-empty">아직 들어온 사람이 없어요.</p>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}

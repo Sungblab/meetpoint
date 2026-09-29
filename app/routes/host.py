@@ -39,6 +39,7 @@ async def dashboard(request: Request, token: str, created: int = 0):
             "qr": qr_svg(join_url),
             "token": token,
             "ai_enabled": svc.settings.ai_enabled,
+            "mail_enabled": svc.settings.mail_enabled,
         },
     )
 
