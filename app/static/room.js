@@ -197,7 +197,7 @@
       if (!res.ok) throw new Error(String(res.status));
       const data = await res.json();
       if (data.matched) {
-        toast(`${data.name}님도 만나고 싶어해요`, "찾는 법과 연락처를 확인해 보세요.", "match");
+        toast(`${data.name}님도 만나고 싶어해요`, "명찰 뒷면에서 전자 명함을 확인해 보세요.", "match");
         if (navigator.vibrate) navigator.vibrate(150);
       } else if (want) {
         toast("만나고 싶어요를 보냈어요", `${p.name}님도 누르면 서로에게 알려드려요.`);
@@ -233,7 +233,7 @@
     es.addEventListener("refresh", () => scheduleLoad());
     es.addEventListener("match", (e) => {
       const data = JSON.parse(e.data || "{}");
-      toast(`${data.name}님과 서로 연결됐어요`, "상대도 만나고 싶어해요. 찾는 법을 확인해 보세요.", "match");
+      toast(`${data.name}님과 서로 연결됐어요`, "명찰 뒷면에서 전자 명함을 확인해 보세요.", "match");
       if (navigator.vibrate) navigator.vibrate(150);
       scheduleLoad(0);
     });

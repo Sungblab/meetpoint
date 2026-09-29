@@ -126,6 +126,7 @@ def test_card_request_sends_image_with_low_thinking():
     assert out.company == "회사" and out.job_title == "대표"
     call = fake.calls[0]
     assert call["config"].thinking_config.thinking_level == types.ThinkingLevel.LOW
+    assert "해요체" in call["config"].system_instruction  # 앱의 다른 문장과 말투를 맞춘다
     image = call["contents"][0]
     assert image.inline_data.mime_type == "image/jpeg" and image.inline_data.data == b"\xff\xd8\xffdata"
 
