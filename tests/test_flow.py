@@ -282,3 +282,10 @@ def test_many_joins_from_one_venue_wifi(app):
             with new_client(app) as c:
                 join(c, code, name=f"참가자{i}", about="쇼핑몰 개발", ask_same="배포")
         assert host.get(f"/s/{code}/count").json()["count"] == 40
+
+
+
+def test_legal_pages(client):
+    assert "개인정보 보호책임자" in client.get("/privacy").text
+    assert "금지 행위" in client.get("/terms").text
+    assert 'href="/privacy"' in client.get("/").text

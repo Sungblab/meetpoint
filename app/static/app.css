@@ -677,4 +677,41 @@ body.screen { min-height: 100vh; }
 .sheet + .desk { margin-top: 16px; }
 .host-warn + .host-grid, .host-grid + .host-manage { margin-top: 16px; }
 .message-body { margin-top: 8px; }
+
+/* ---------- 푸터 ---------- */
+
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 20px;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 20px 16px calc(28px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--table-line);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--on-table-2);
+}
+.site-footer a { color: inherit; text-decoration: none; }
+.site-footer a:hover { color: var(--on-table); text-decoration: underline; }
+.site-footer nav { display: flex; gap: 16px; }
+.sheet .hint a { color: var(--ink-2); }
+
+/* ---------- 약관 문서 ---------- */
+
+.legal { max-width: 760px; }
+.legal .h2 { margin-top: 24px; font-size: 32px; }
+.legal-date { margin-top: 8px; font-size: 14px; color: var(--on-table-2); }
+.legal h2 { margin: 36px 0 10px; font-size: 19px; font-weight: 800; }
+.legal p, .legal li { font-size: 15px; line-height: 1.75; color: #d8d8d3; }
+.legal p + p { margin-top: 10px; }
+.legal ul { display: grid; gap: 6px; padding-left: 20px; list-style: disc; }
+.legal a { color: var(--on-table); }
+.table-wrap { overflow-x: auto; margin: 12px 0; border: 1px solid var(--table-line); border-radius: var(--radius-sm); }
+.legal table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 14px; line-height: 1.6; }
+.legal th, .legal td { padding: 10px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--table-line); }
+.legal th { font-weight: 800; color: var(--on-table); background: var(--table-raised); white-space: nowrap; }
+.legal td { color: #d8d8d3; }
+.legal tr:last-child td { border-bottom: 0; }
 .message-action { margin-top: 18px; }
