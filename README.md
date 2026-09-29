@@ -81,7 +81,7 @@ cd ~/apps/meetpoint
 
 # 2. 설정
 cp .env.example .env
-nano .env   # POSTGRES_PASSWORD, GEMINI_API_KEY, ADMIN_PASSWORD, SMTP_USER, SMTP_PASSWORD, PUBLIC_BASE_URL, APP_PORT
+nano .env   # POSTGRES_PASSWORD, GEMINI_API_KEY, ADMIN_PASSWORD, SMTP_HOST, SMTP_USER, SMTP_PASSWORD, MAIL_FROM, PUBLIC_BASE_URL, APP_PORT
 
 # 3. 실행
 docker compose up -d --build --wait
