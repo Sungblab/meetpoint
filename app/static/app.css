@@ -286,7 +286,7 @@ input[readonly] { background: var(--stock-2); color: var(--ink-2); }
 .person-name { font-size: 34px; line-height: 1.12; font-weight: 800; letter-spacing: -0.025em; }
 .person-headline { margin-top: 6px; font-size: 15px; font-weight: 600; color: var(--ink-2); }
 
-.reason { margin-top: 16px; font-size: 17px; line-height: 1.5; font-weight: 700; text-wrap: pretty; }
+.reason { margin-top: 16px; font-size: 17px; line-height: 1.5; font-weight: 700; text-wrap: balance; }
 
 .opener {
   margin-top: 12px;

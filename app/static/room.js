@@ -1,6 +1,7 @@
 (() => {
   const el = window.el;
   const icon = window.icon;
+  const glue = window.glue;
   const app = document.getElementById("app");
   const base = `/r/${app.dataset.code}`;
   const listEl = document.getElementById("list");
@@ -74,7 +75,7 @@
 
   function field(label, value) {
     if (!value) return null;
-    return [el("dt", { text: label }), el("dd", { text: value })];
+    return [el("dt", { text: label }), el("dd", { text: glue(value) })];
   }
 
   // 명찰 머리띠: 관계 종류와 내 상태
@@ -119,17 +120,17 @@
         "div",
         { class: "person-body" },
         el("h2", { class: "person-name", text: p.name }),
-        p.headline ? el("p", { class: "person-headline", text: p.headline }) : null,
-        rec && rec.reason ? el("p", { class: "reason", text: rec.reason }) : null,
+        p.headline ? el("p", { class: "person-headline", text: glue(p.headline) }) : null,
+        rec && rec.reason ? el("p", { class: "reason", text: glue(rec.reason) }) : null,
         rec && rec.opener
           ? el(
               "p",
               { class: "opener" },
               el("span", { class: "opener-label", text: "이렇게 말을 걸어보세요" }),
-              el("span", { class: "opener-text", text: rec.opener }),
+              el("span", { class: "opener-text", text: glue(rec.opener) }),
             )
           : null,
-        p.find_me ? el("p", { class: "find-me" }, icon("pin"), el("span", {}, "찾는 법 ", el("strong", { text: p.find_me }))) : null,
+        p.find_me ? el("p", { class: "find-me" }, icon("pin"), el("span", {}, "찾는 법 ", el("strong", { text: glue(p.find_me) }))) : null,
         details,
       ),
       ...actions(p),
