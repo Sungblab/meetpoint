@@ -351,9 +351,32 @@ input[readonly] { background: var(--stock-2); color: var(--ink-2); }
   background: var(--stock-2);
   color: var(--ink);
 }
-.badge-back-label { font-size: 12px; font-weight: 800; color: var(--ink-3); }
-.badge-back-value { font-size: 18px; font-weight: 800; overflow-wrap: anywhere; }
 .badge-back .note { font-size: 14px; color: var(--ink-2); }
+/* 전자 명함: 서로 연결되면 명찰 뒷면에, 입장 양식에는 미리보기로 */
+.ecard {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  min-height: 150px;
+  padding: 18px 18px 30px;
+  border-radius: 12px;
+  background: var(--stock);
+  box-shadow: inset 0 4px 0 var(--match), 0 0 0 1px var(--stock-line);
+}
+.ecard.preview { box-shadow: inset 0 4px 0 var(--attendee), 0 0 0 1px var(--stock-line); }
+.ecard-name { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+.ecard-headline { font-size: 14px; font-weight: 600; color: var(--ink-2); }
+.ecard-lines { display: grid; gap: 6px; margin-top: 12px; }
+.ecard-line { display: flex; align-items: center; gap: 8px; min-height: 30px; font-size: 15px; font-weight: 700; color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+.ecard-line[hidden] { display: none; }
+.ecard-line .icon { width: 16px; height: 16px; color: var(--ink-3); }
+a.ecard-line:hover span { text-decoration: underline; text-underline-offset: 3px; }
+.ecard-brand { position: absolute; right: 16px; bottom: 10px; font-size: 11px; font-weight: 800; color: var(--ink-3); }
+.ecard .is-blank { color: var(--ink-3); }
+.ecard-save { margin-top: 12px; }
+.ecard-fields { display: grid; gap: 18px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.ecard-fields legend { padding: 0; margin-bottom: 10px; }
+.sheet .preview-label { color: var(--ink-3); }
 
 .person.just-matched { animation: badge-turn 0.34s var(--ease) both; backface-visibility: hidden; scroll-margin: 96px 0 120px; }
 .person.just-matched .badge-back { animation: back-open 0.3s var(--ease) 0.3s both; transform-origin: 50% 0; backface-visibility: hidden; }

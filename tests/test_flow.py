@@ -96,7 +96,7 @@ def test_mutual_like_reveals_contact(app):
         a_id = state(b, code)["people"][0]["id"]
 
         res = a.post(f"/r/{code}/api/like/{b_id}", json={"liked": True}).json()
-        assert res == {"liked": True, "matched": False, "name": "박마케터", "contact": None}
+        assert res == {"liked": True, "matched": False, "name": "박마케터", "contact": None, "phone": None, "email": None}
         # 한쪽만 누르면 상대 화면에는 아무 표시도 없다.
         other = state(b, code)["people"][0]
         assert other["liked"] is False and other["matched"] is False and other["contact"] is None
@@ -289,3 +289,87 @@ def test_legal_pages(client):
     assert "개인정보 보호책임자" in client.get("/privacy").text
     assert "금지 행위" in client.get("/terms").text
     assert 'href="/privacy"' in client.get("/").text
+    privacy = client.get("/privacy").text
+    assert "전화번호, 이메일, 기타 연락처" in privacy
+    assert "휴대폰 연락처에 저장할 수 있습니다" in privacy
+
+
+def test_join_validates_phone_and_email(client):
+    _, code = create_room(client)
+    res = client.post(f"/r/{code}/join", data=dict(DEV, phone="전화해", email="dev-at-example"), follow_redirects=False)
+    assert res.status_code == 400
+    assert "전화번호는" in res.text
+    assert "이메일 주소를" in res.text
+
+
+def test_join_accepts_common_phone_formats(app):
+    phones = ["010-1234-5678", "010 1234 5678", "+82 10-1234-5678", "02-123-4567", "(02) 123-4567", "010.1234.5678"]
+    for i, phone in enumerate(phones):
+        with new_client(app) as c:
+            _, code = create_room(c, name=f"방 {i}")
+            join(c, code, **dict(DEV, phone=phone, email="Dev@Example.com"))
+
+
+def test_phone_only_edit_keeps_version(app):
+    with new_client(app) as host, new_client(app) as a:
+        _, code = create_room(host)
+        join(a, code, **DEV)
+        a.post(f"/r/{code}/me", data=dict(DEV, phone="010-9999-0000", email="new@example.com"))
+
+    async def read():
+        async with app.state.services.db.sessionmaker() as s:
+            p = await s.scalar(select(Participant))
+            return p.profile_version, p.phone, p.email
+
+    import asyncio
+
+    assert asyncio.run(read()) == (1, "010-9999-0000", "new@example.com")
+
+
+def test_vcard_only_for_mutual_connections(app):
+    with new_client(app) as host, new_client(app) as a, new_client(app) as b:
+        _, code = create_room(host)
+        join(a, code, **dict(DEV, phone="010-1111-2222", email="dev@example.com"))
+        join(b, code, **dict(MARKETER, phone="010-3333-4444", email="mk@example.com"))
+        b_id = state(a, code)["people"][0]["id"]
+        a_id = state(b, code)["people"][0]["id"]
+
+        assert state(a, code)["people"][0]["phone"] is None
+        assert a.get(f"/r/{code}/api/vcard/{b_id}").status_code == 404
+        a.post(f"/r/{code}/api/like/{b_id}", json={"liked": True})
+        assert a.get(f"/r/{code}/api/vcard/{b_id}").status_code == 404  # 한쪽만
+
+        res = b.post(f"/r/{code}/api/like/{a_id}", json={"liked": True}).json()
+        assert res["phone"] == "010-1111-2222" and res["email"] == "dev@example.com"
+        pa = state(a, code)["people"][0]
+        assert pa["phone"] == "010-3333-4444" and pa["email"] == "mk@example.com"
+
+        card = a.get(f"/r/{code}/api/vcard/{b_id}")
+        assert card.status_code == 200
+        assert card.headers["content-type"].startswith("text/vcard")
+        # iOS Safari는 attachment면 파일 앱으로 보내고, inline이어야 연락처 추가 화면을 연다.
+        assert card.headers["content-disposition"].startswith("inline;")
+        assert 'filename="contact.vcf"' in card.headers["content-disposition"]
+        assert "filename*=UTF-8''%EB%B0%95" in card.headers["content-disposition"]
+        body = card.text
+        assert "FN:박마케터" in body
+        assert "TEL;TYPE=CELL:010-3333-4444" in body
+        assert "EMAIL;TYPE=INTERNET:mk@example.com" in body
+        assert "NOTE:Meetpoint · 자사몰 특강 · " in body
+
+        a.post(f"/r/{code}/api/like/{b_id}", json={"liked": False})
+        assert a.get(f"/r/{code}/api/vcard/{b_id}").status_code == 404
+        assert state(a, code)["people"][0]["phone"] is None
+
+
+def test_vcard_requires_participant(client):
+    _, code = create_room(client)
+    assert client.get(f"/r/{code}/api/vcard/1").status_code == 401
+
+
+def test_join_form_has_ecard_fields(client):
+    _, code = create_room(client)
+    page = client.get(f"/r/{code}").text
+    assert 'name="phone" type="tel"' in page
+    assert 'name="email" type="email"' in page
+    assert 'id="ecard-preview"' in page

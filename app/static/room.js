@@ -150,20 +150,33 @@
     const btn = el("button", { class: `btn like-btn ${cls}`, type: "button", "aria-pressed": p.liked ? "true" : "false" }, label);
     btn.addEventListener("click", () => toggleLike(p, btn));
     const parts = [el("div", { class: "person-actions" }, btn)];
-    if (p.matched) {
-      // 명찰 뒷면: 서로 연결된 사람에게만 연락처가 보인다.
-      parts.push(
-        p.contact
-          ? el(
-              "div",
-              { class: "badge-back" },
-              el("span", { class: "badge-back-label", text: "연락처" }),
-              el("span", { class: "badge-back-value", text: p.contact }),
-            )
-          : el("div", { class: "badge-back" }, el("p", { class: "note", text: "연락처는 적지 않았어요. 찾는 법을 보고 직접 찾아가 보세요." })),
-      );
-    }
+    if (p.matched) parts.push(ecard(p));
     return parts;
+  }
+
+  // 명찰 뒷면의 전자 명함. 서로 연결된 사람에게만 서버가 연락처를 보낸다.
+  function ecard(p) {
+    const lines = [
+      p.phone && el("a", { class: "ecard-line", href: `tel:${p.phone.replace(/[^0-9+]/g, "")}` }, icon("phone"), el("span", { text: p.phone })),
+      p.email && el("a", { class: "ecard-line", href: `mailto:${p.email}` }, icon("mail"), el("span", { text: p.email })),
+      p.contact && el("p", { class: "ecard-line" }, icon("link"), el("span", { text: p.contact })),
+    ].filter(Boolean);
+    if (!lines.length) {
+      return el("div", { class: "badge-back" }, el("p", { class: "note", text: "연락처는 적지 않았어요. 찾는 법을 보고 직접 찾아가 보세요." }));
+    }
+    return el(
+      "div",
+      { class: "badge-back" },
+      el(
+        "div",
+        { class: "ecard" },
+        el("p", { class: "ecard-name", text: p.name }),
+        p.headline ? el("p", { class: "ecard-headline", text: glue(p.headline) }) : null,
+        el("div", { class: "ecard-lines" }, lines),
+        el("span", { class: "ecard-brand", text: "Meetpoint" }),
+      ),
+      el("a", { class: "btn primary block ecard-save", href: `${base}/api/vcard/${p.id}` }, "연락처에 저장"),
+    );
   }
 
   async function toggleLike(p, btn) {

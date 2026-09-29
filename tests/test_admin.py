@@ -31,7 +31,7 @@ def test_admin_needs_password(admin_app):
 def test_admin_shows_rooms_and_people_without_contacts(admin_app):
     with TestClient(admin_app) as host, new_client(admin_app) as a, new_client(admin_app) as b:
         _, code = create_room(host, name="AI 서비스 밋업")
-        join(a, code, **DEV)
+        join(a, code, **dict(DEV, phone="010-1234-5678", email="dev-card@example.com"))
         join(b, code, **MARKETER)
         a_id, b_id = state(a, code)["me"]["id"], state(b, code)["me"]["id"]
         a.post(f"/r/{code}/api/like/{b_id}", json={"liked": True})
@@ -48,6 +48,7 @@ def test_admin_shows_rooms_and_people_without_contacts(admin_app):
         assert page.status_code == 200
         assert DEV["about"] in page.text and MARKETER["ask_other"] in page.text
         for text in (home.text, page.text):
-            assert DEV["contact"] not in text and MARKETER["contact"] not in text
+            for secret in (DEV["contact"], MARKETER["contact"], "010-1234-5678", "dev-card@example.com"):
+                assert secret not in text
 
         assert host.get("/admin/r/ZZZZZZ", auth=AUTH).status_code == 404

@@ -45,7 +45,10 @@ class Participant(Base):
     ask_other: Mapped[str] = mapped_column(Text, default="")
     # 현장에서 나를 알아볼 수 있는 단서. 방 참가자 모두에게 보인다.
     find_me: Mapped[str] = mapped_column(String(60), default="")
-    # 서로 만나고 싶다고 누른 사람에게만 보인다.
+    # 전자 명함. 서로 만나고 싶다고 누른 사람에게만 보인다.
+    phone: Mapped[str] = mapped_column(String(30), default="")
+    email: Mapped[str] = mapped_column(String(100), default="")
+    # 기타 연락처(카카오톡 ID, 링크드인 등). 서로 만나고 싶다고 누른 사람에게만 보인다.
     contact: Mapped[str] = mapped_column(String(100), default="")
     # pending: 추천 계산 중, ready: 끝남
     recs_status: Mapped[str] = mapped_column(String(10), default="pending")

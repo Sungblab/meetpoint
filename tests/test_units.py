@@ -1,6 +1,8 @@
 import asyncio
 from datetime import UTC, datetime, timedelta
 
+from sqlalchemy import text
+
 from app.broker import Broker
 from app.config import Settings
 from app.db import Database
@@ -9,6 +11,7 @@ from app.matching.schemas import Profile
 from app.matching.service import purge_legacy_rooms
 from app.models import Participant, Room
 from app.ratelimit import RateLimiter
+from app.vcard import build_vcard
 
 
 def test_heuristic_handles_korean_particles():
@@ -103,3 +106,35 @@ def test_purge_only_legacy_rooms(tmp_path):
 def test_settings_ai_enabled():
     assert not Settings(_env_file=None, gemini_api_key="").ai_enabled
     assert Settings(_env_file=None, gemini_api_key="k").ai_enabled
+
+
+def test_create_all_adds_new_columns_to_old_table(tmp_path):
+    db = Database(f"sqlite+aiosqlite:///{tmp_path / 'old.db'}")
+
+    async def run():
+        async with db.engine.begin() as conn:
+            await conn.execute(text(
+                "CREATE TABLE participants (id INTEGER PRIMARY KEY, room_id INTEGER, token_hash VARCHAR(64), "
+                "name VARCHAR(30), headline VARCHAR(60), about TEXT, ask_same TEXT, ask_other TEXT, "
+                "find_me VARCHAR(60), contact VARCHAR(100), recs_status VARCHAR(10), profile_version INTEGER, "
+                "created_at DATETIME, updated_at DATETIME)"
+            ))
+            await conn.execute(text("INSERT INTO participants (id, room_id, token_hash, name) VALUES (1, 1, 'x', '가')"))
+        await db.create_all()
+        async with db.engine.connect() as conn:
+            row = (await conn.execute(text("SELECT phone, email FROM participants WHERE id = 1"))).one()
+        await db.dispose()
+        return tuple(row)
+
+    assert asyncio.run(run()) == ("", "")
+
+
+def test_vcard_escapes_special_characters():
+    body = build_vcard(name="김, 하늘;", headline="대표\\CEO", phone="010-1234-5678", email="",
+                       other="카톡 abc", note="이유\n둘째 줄")
+    assert "FN:김\\, 하늘\\;" in body
+    assert "TITLE:대표\\\\CEO" in body
+    assert "EMAIL" not in body
+    assert "NOTE:이유\\n둘째 줄\\n기타 연락처: 카톡 abc" in body
+    assert body.startswith("BEGIN:VCARD\r\nVERSION:3.0\r\n")
+    assert body.endswith("END:VCARD\r\n")
