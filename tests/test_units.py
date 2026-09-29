@@ -11,6 +11,7 @@ from app.matching.schemas import Profile
 from app.matching.service import purge_expired_rooms
 from app.models import Participant, Room
 from app.ratelimit import RateLimiter
+from app.vcard import build_vcard
 
 
 def test_heuristic_handles_korean_particles():
@@ -122,3 +123,14 @@ def test_create_all_adds_new_columns_to_old_table(tmp_path):
         return tuple(row)
 
     assert asyncio.run(run()) == ("", "")
+
+
+def test_vcard_escapes_special_characters():
+    body = build_vcard(name="김, 하늘;", headline="대표\\CEO", phone="010-1234-5678", email="",
+                       other="카톡 abc", note="이유\n둘째 줄")
+    assert "FN:김\\, 하늘\\;" in body
+    assert "TITLE:대표\\\\CEO" in body
+    assert "EMAIL" not in body
+    assert "NOTE:이유\\n둘째 줄\\n기타 연락처: 카톡 abc" in body
+    assert body.startswith("BEGIN:VCARD\r\nVERSION:3.0\r\n")
+    assert body.endswith("END:VCARD\r\n")

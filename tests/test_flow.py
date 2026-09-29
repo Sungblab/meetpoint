@@ -96,7 +96,7 @@ def test_mutual_like_reveals_contact(app):
         a_id = state(b, code)["people"][0]["id"]
 
         res = a.post(f"/r/{code}/api/like/{b_id}", json={"liked": True}).json()
-        assert res == {"liked": True, "matched": False, "name": "박마케터", "contact": None}
+        assert res == {"liked": True, "matched": False, "name": "박마케터", "contact": None, "phone": None, "email": None}
         # 한쪽만 누르면 상대 화면에는 아무 표시도 없다.
         other = state(b, code)["people"][0]
         assert other["liked"] is False and other["matched"] is False and other["contact"] is None
@@ -321,3 +321,42 @@ def test_phone_only_edit_keeps_version(app):
     import asyncio
 
     assert asyncio.run(read()) == (1, "010-9999-0000", "new@example.com")
+
+
+def test_vcard_only_for_mutual_connections(app):
+    with new_client(app) as host, new_client(app) as a, new_client(app) as b:
+        _, code = create_room(host)
+        join(a, code, **dict(DEV, phone="010-1111-2222", email="dev@example.com"))
+        join(b, code, **dict(MARKETER, phone="010-3333-4444", email="mk@example.com"))
+        b_id = state(a, code)["people"][0]["id"]
+        a_id = state(b, code)["people"][0]["id"]
+
+        assert state(a, code)["people"][0]["phone"] is None
+        assert a.get(f"/r/{code}/api/vcard/{b_id}").status_code == 404
+        a.post(f"/r/{code}/api/like/{b_id}", json={"liked": True})
+        assert a.get(f"/r/{code}/api/vcard/{b_id}").status_code == 404  # 한쪽만
+
+        res = b.post(f"/r/{code}/api/like/{a_id}", json={"liked": True}).json()
+        assert res["phone"] == "010-1111-2222" and res["email"] == "dev@example.com"
+        pa = state(a, code)["people"][0]
+        assert pa["phone"] == "010-3333-4444" and pa["email"] == "mk@example.com"
+
+        card = a.get(f"/r/{code}/api/vcard/{b_id}")
+        assert card.status_code == 200
+        assert card.headers["content-type"].startswith("text/vcard")
+        assert 'filename="contact.vcf"' in card.headers["content-disposition"]
+        assert "filename*=UTF-8''%EB%B0%95" in card.headers["content-disposition"]
+        body = card.text
+        assert "FN:박마케터" in body
+        assert "TEL;TYPE=CELL:010-3333-4444" in body
+        assert "EMAIL;TYPE=INTERNET:mk@example.com" in body
+        assert "NOTE:Meetpoint · 자사몰 특강 · " in body
+
+        a.post(f"/r/{code}/api/like/{b_id}", json={"liked": False})
+        assert a.get(f"/r/{code}/api/vcard/{b_id}").status_code == 404
+        assert state(a, code)["people"][0]["phone"] is None
+
+
+def test_vcard_requires_participant(client):
+    _, code = create_room(client)
+    assert client.get(f"/r/{code}/api/vcard/1").status_code == 401

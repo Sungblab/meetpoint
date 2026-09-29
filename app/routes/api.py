@@ -1,19 +1,22 @@
 import asyncio
 import json
+from datetime import UTC, timedelta, timezone
 
 from fastapi import APIRouter, Request
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import JSONResponse, Response, StreamingResponse
 from sqlalchemy import select
 
 from .. import repo
 from ..broker import Broker
 from ..models import Like, Participant, Recommendation
+from ..vcard import build_vcard, vcard_disposition
 from ..web import services
 from .pages import current_participant
 
 router = APIRouter()
 
 KEEPALIVE_SECONDS = 15
+KST = timezone(timedelta(hours=9))
 
 
 def sse_response(request: Request, broker: Broker, room_id: int, participant_id: int | None) -> StreamingResponse:
@@ -92,6 +95,8 @@ async def build_state(s, room, me: Participant) -> dict:
                 "find_me": p.find_me,
                 "liked": p.id in my_likes,
                 "matched": matched,
+                "phone": p.phone if matched else None,
+                "email": p.email if matched else None,
                 "contact": p.contact if matched else None,
                 "rec": _rec_json(rec),
                 "pending": pending,
@@ -113,6 +118,12 @@ async def _auth(request: Request, s, code: str):
     room = await repo.room_by_code(s, code)
     me = await current_participant(request, s, room) if room is not None else None
     return room, me
+
+
+async def _is_matched(s, a: int, b: int) -> bool:
+    mine = await s.scalar(select(Like.id).where(Like.from_id == a, Like.to_id == b))
+    theirs = await s.scalar(select(Like.id).where(Like.from_id == b, Like.to_id == a))
+    return mine is not None and theirs is not None
 
 
 @router.get("/r/{code}/api/state")
@@ -153,6 +164,7 @@ async def like(request: Request, code: str, target_id: int):
         matched = want and reverse is not None
         room_id, me_id, me_name = room.id, me.id, me.name
         target_name, target_contact = target.name, target.contact
+        target_phone, target_email = target.phone, target.email
 
     if matched and not was_matched:
         svc.broker.publish(room_id, "match", {"id": me_id, "name": me_name}, to=target_id)
@@ -166,7 +178,33 @@ async def like(request: Request, code: str, target_id: int):
         "matched": matched,
         "name": target_name,
         "contact": target_contact if matched else None,
+        "phone": target_phone if matched else None,
+        "email": target_email if matched else None,
     }
+
+
+@router.get("/r/{code}/api/vcard/{target_id}")
+async def vcard(request: Request, code: str, target_id: int):
+    svc = services(request)
+    async with svc.db.sessionmaker() as s:
+        room, me = await _auth(request, s, code)
+        if room is None or me is None:
+            return JSONResponse({"error": "unauthorized"}, status_code=401)
+        target = await s.get(Participant, target_id)
+        if target is None or target.room_id != room.id or not await _is_matched(s, me.id, target.id):
+            return JSONResponse({"error": "not_found"}, status_code=404)
+        rec = await s.scalar(
+            select(Recommendation).where(Recommendation.viewer_id == me.id, Recommendation.target_id == target.id)
+        )
+        created = room.created_at if room.created_at.tzinfo else room.created_at.replace(tzinfo=UTC)
+        note = f"Meetpoint · {room.name} · {created.astimezone(KST):%Y-%m-%d}"
+        if rec is not None and rec.reason:
+            note += f" · 만난 이유: {rec.reason}"
+        body = build_vcard(name=target.name, headline=target.headline, phone=target.phone,
+                           email=target.email, other=target.contact, note=note)
+        name = target.name
+    return Response(body, media_type="text/vcard; charset=utf-8",
+                    headers={"Content-Disposition": vcard_disposition(name), "Cache-Control": "no-store"})
 
 
 @router.get("/r/{code}/api/events")
