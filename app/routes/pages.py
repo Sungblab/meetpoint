@@ -332,6 +332,8 @@ async def read_card(request: Request, code: str, file: UploadFile = File(...)):
             "name": card.name[: PROFILE_LIMITS["name"]],
             "headline": card.headline[: PROFILE_LIMITS["headline"]],
             "about": card.about[: PROFILE_LIMITS["about"]],
+            "phone": card.phone[: PROFILE_LIMITS["phone"]],
+            "email": card.email[: PROFILE_LIMITS["email"]],
             "contact": card.contact[: PROFILE_LIMITS["contact"]],
         }
     )

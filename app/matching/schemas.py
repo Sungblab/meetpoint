@@ -61,6 +61,8 @@ class CardOut(BaseModel):
     name: str
     headline: str
     about: str
+    phone: str
+    email: str
     contact: str
 
 
@@ -104,9 +106,11 @@ CARD_SCHEMA = {
         "name": {"type": "string"},
         "headline": {"type": "string"},
         "about": {"type": "string"},
+        "phone": {"type": "string"},
+        "email": {"type": "string"},
         "contact": {"type": "string"},
     },
-    "required": ["is_business_card", "name", "headline", "about", "contact"],
+    "required": ["is_business_card", "name", "headline", "about", "phone", "email", "contact"],
     "additionalProperties": False,
 }
 

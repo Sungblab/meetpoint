@@ -52,6 +52,8 @@
       fill("name", data.name);
       fill("headline", data.headline);
       fill("about", data.about);
+      fill("phone", data.phone);
+      fill("email", data.email);
       fill("contact", data.contact);
       status.textContent = "채웠어요. 내용을 확인하고 오늘 만나고 싶은 사람을 적어주세요.";
       form.elements.ask_same.focus();
