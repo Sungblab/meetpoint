@@ -60,7 +60,7 @@ async def stats(request: Request, token: str):
             "participants": len(people),
             "pending": sum(1 for p in people if p.recs_status == "pending"),
             "matches": len(pairs),
-            "people": [{"name": p.name, "headline": p.headline} for p in people],
+            "people": [{"id": p.id, "name": p.name, "headline": p.headline} for p in people],
         }
 
 
@@ -95,6 +95,24 @@ async def close_room(request: Request, token: str):
 @router.post("/h/{token}/reopen")
 async def reopen_room(request: Request, token: str):
     return await _set_closed(request, token, False)
+
+
+@router.post("/h/{token}/remove/{participant_id}")
+async def remove_participant(request: Request, token: str, participant_id: int):
+    """장난으로 들어온 사람을 내보낸다. 그 사람의 명찰, 추천, 연결 기록을 지운다."""
+    svc = services(request)
+    async with svc.db.sessionmaker() as s:
+        room = await repo.room_by_host_token(s, token)
+        target = await s.get(Participant, participant_id) if room is not None else None
+        if target is None or target.room_id != room.id:
+            return JSONResponse({"error": "not_found"}, status_code=404)
+        await repo.delete_participant(s, target.id)
+        await s.commit()
+        room_id = room.id
+    # 내보낸 사람의 화면은 새로고침되어 입장 화면으로 돌아간다.
+    svc.broker.publish(room_id, "gone", to=participant_id)
+    svc.broker.publish(room_id, "refresh")
+    return {"ok": True}
 
 
 @router.post("/h/{token}/delete")

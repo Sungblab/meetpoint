@@ -37,6 +37,10 @@ class Services:
         # IP 제한은 스팸을 막는 정도로만 크게 두고, 입장 수는 방 정원으로 제한한다.
         self.room_limiter = RateLimiter(limit=20, window_seconds=3600)
         self.join_limiter = RateLimiter(limit=1000, window_seconds=3600)
+        # 한 방에 가짜 참가자를 한꺼번에 밀어 넣지 못하게 방마다 1분에 60명까지 받는다.
+        self.room_join_limiter = RateLimiter(limit=60, window_seconds=60)
+        # 없는 방 코드는 IP마다 10분에 30번까지. 코드를 차례로 맞혀 보는 것을 막는다.
+        self.room_miss_limiter = RateLimiter(limit=30, window_seconds=600)
         self.card_ip_limiter = RateLimiter(limit=600, window_seconds=3600)
         # 명함 읽기는 AI 비용이 드니 방마다 정원의 두 배까지만 허용한다.
         self.card_room_limiter = RateLimiter(limit=2 * settings.max_participants, window_seconds=86400)

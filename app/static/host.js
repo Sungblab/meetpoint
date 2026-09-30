@@ -14,10 +14,22 @@
     list.replaceChildren(
       ...(s.people.length
         ? s.people.slice(0, 50).map((p) =>
-            el("li", {}, el("strong", { text: p.name }), p.headline ? el("span", { class: "sub", text: ` · ${p.headline}` }) : null),
+            el(
+              "li",
+              {},
+              el("strong", { text: p.name }),
+              p.headline ? el("span", { class: "sub", text: ` · ${p.headline}` }) : null,
+              el("button", { class: "btn ghost small", type: "button", onclick: () => remove(p) }, "내보내기"),
+            ),
           )
         : [el("li", { class: "muted", text: "아직 없어요" })]),
     );
+  }
+
+  async function remove(p) {
+    if (!confirm(`${p.name}님을 내보낼까요? 명찰과 연결 기록이 지워져요. 다시 못 들어오게 하려면 입장을 마감하세요.`)) return;
+    await fetch(`${base}/remove/${p.id}`, { method: "POST" });
+    schedule();
   }
 
   let timer = null;

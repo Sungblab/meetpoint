@@ -1,6 +1,6 @@
 from sqlalchemy import func, select
 
-from app.models import Like, Participant, Recommendation
+from app.models import Like, Participant, Recommendation, Room
 
 from .conftest import create_room, join, new_client, state
 
@@ -27,7 +27,7 @@ MARKETER = dict(
 def test_landing_and_create_room(client):
     assert client.get("/").status_code == 200
     token, code = create_room(client)
-    assert len(code) == 6
+    assert len(code) == 8
     page = client.get(f"/h/{token}")
     assert "<svg" in page.text
     assert f"/r/{code}" in page.text
@@ -298,6 +298,68 @@ def test_many_joins_from_one_venue_wifi(app):
                 join(c, code, name=f"참가자{i}", about="쇼핑몰 개발", ask_same="배포")
         assert host.get(f"/s/{code}/count").json()["count"] == 40
 
+
+
+def test_old_six_letter_codes_still_work(app):
+    async def add_old_room():
+        async with app.state.services.db.sessionmaker() as s:
+            s.add(Room(code="ABC234", host_token_hash="a" * 64, name="예전 방"))
+            await s.commit()
+
+    import asyncio
+
+    with new_client(app) as a:
+        asyncio.run(add_old_room())  # 테이블은 앱이 시작할 때 만든다
+        assert "예전 방" in a.get("/r/ABC234").text
+        join(a, "ABC234", **DEV)
+        assert state(a, "ABC234")["me"]["name"] == DEV["name"]
+
+
+def test_unknown_room_codes_are_rate_limited(app):
+    app.state.services.room_miss_limiter.limit = 3
+    with new_client(app) as host, new_client(app) as a, new_client(app) as scanner:
+        _, code = create_room(host)
+        join(a, code, **DEV)
+        for guess in ("ZZZZZZZZ", "YYYYYYYY", "XXXXXXXX"):
+            assert scanner.get(f"/r/{guess}").status_code == 404
+        # 막힌 동안에는 있는 방도 없는 방도 똑같이 429라서 코드를 맞혀 볼 수 없다.
+        assert scanner.get("/r/WWWWWWWW").status_code == 429
+        assert scanner.get(f"/r/{code}").status_code == 429
+        assert scanner.get(f"/s/{code}/count").status_code == 429
+        # 같은 행사장 IP여도 이미 들어온 참가자는 계속 쓴다.
+        assert a.get(f"/r/{code}").status_code == 200
+
+
+def test_room_join_rate_limit(app):
+    app.state.services.room_join_limiter.limit = 2
+    with new_client(app) as host:
+        _, code = create_room(host)
+        _, other = create_room(host, "다른 방")
+        for i in range(2):
+            with new_client(app) as c:
+                join(c, code, name=f"참가자{i}", about="소개", ask_same="질문")
+        with new_client(app) as c:
+            res = c.post(f"/r/{code}/join", data={"name": "셋째", "about": "소개", "ask_same": "질문"})
+            assert res.status_code == 400
+            assert "들어오는 사람이 많아요" in res.text
+            join(c, other, name="셋째", about="소개", ask_same="질문")
+
+
+def test_host_removes_participant(app):
+    with new_client(app) as host, new_client(app) as a, new_client(app) as b:
+        token, code = create_room(host)
+        other_token, other_code = create_room(host, "다른 방")
+        join(a, code, **DEV)
+        join(b, code, **MARKETER)
+        b_id = state(b, code)["me"]["id"]
+        assert {p["id"] for p in host.get(f"/h/{token}/api/stats").json()["people"]} == {b_id, state(a, code)["me"]["id"]}
+
+        assert host.post(f"/h/{other_token}/remove/{b_id}").status_code == 404
+        assert host.post(f"/h/not-a-token/remove/{b_id}").status_code == 404
+        assert host.post(f"/h/{token}/remove/{b_id}").json() == {"ok": True}
+        assert b.get(f"/r/{code}/api/state").status_code == 401
+        assert [p["name"] for p in state(a, code)["people"]] == []
+        assert host.get(f"/h/{token}/api/stats").json()["participants"] == 1
 
 
 def test_legal_pages(client):

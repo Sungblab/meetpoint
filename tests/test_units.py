@@ -109,6 +109,12 @@ def test_rate_limiter():
     assert limiter.allow("ip") and limiter.allow("ip")
     assert not limiter.allow("ip")
     assert limiter.allow("other")
+    # blocked는 세지 않고 확인만 한다.
+    misses = RateLimiter(limit=2, window_seconds=60)
+    assert not misses.blocked("ip") and not misses.blocked("ip")
+    misses.allow("ip")
+    misses.allow("ip")
+    assert misses.blocked("ip")
 
 
 def test_purge_only_legacy_rooms(tmp_path):

@@ -1,6 +1,6 @@
 import re
 
-from fastapi import APIRouter, BackgroundTasks, File, Request, UploadFile
+from fastapi import APIRouter, BackgroundTasks, File, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from .. import repo
@@ -95,6 +95,22 @@ async def current_participant(request: Request, s, room: Room) -> Participant | 
     return await repo.participant_by_token(s, room, token)
 
 
+async def find_room(request: Request, s, code: str) -> Room | None:
+    """방 코드로 방을 찾는다. 없는 코드를 여러 번 넣은 IP는 잠시 막아 코드를 맞혀 보지 못하게 한다.
+    막힌 동안에도 이미 들어온 참가자는 쓸 수 있다. 행사장은 모두 같은 IP로 들어오기 때문이다."""
+    svc = services(request)
+    ip = client_ip(request)
+    blocked = svc.room_miss_limiter.blocked(ip)
+    room = await repo.room_by_code(s, code)
+    if room is None:
+        svc.room_miss_limiter.allow(ip)
+    elif not blocked or await current_participant(request, s, room) is not None:
+        return room
+    if blocked:
+        raise HTTPException(429, "잠시 뒤에 다시 시도해 주세요.")
+    return None
+
+
 @router.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     mail = services(request).settings.mail_enabled
@@ -178,7 +194,7 @@ async def room_page(request: Request, code: str, left: int = 0):
         return RedirectResponse(f"/r/{code.upper()}", status_code=307)
     svc = services(request)
     async with svc.db.sessionmaker() as s:
-        room = await repo.room_by_code(s, code)
+        room = await find_room(request, s, code)
         if room is None:
             return _not_found(request)
         me = await current_participant(request, s, room)
@@ -210,7 +226,7 @@ async def join_room(request: Request, code: str):
     form = await request.form()
     data, errors = clean_profile(form)
     async with svc.db.sessionmaker() as s:
-        room = await repo.room_by_code(s, code)
+        room = await find_room(request, s, code)
         if room is None:
             return _not_found(request)
         if await current_participant(request, s, room) is not None:
@@ -221,6 +237,8 @@ async def join_room(request: Request, code: str):
             errors = ["이 방은 정원이 찼어요."]
         elif not errors and not svc.join_limiter.allow(client_ip(request)):
             errors = ["요청이 너무 많아요. 잠시 뒤에 다시 시도해 주세요."]
+        elif not errors and not svc.room_join_limiter.allow(room.code):
+            errors = ["지금 들어오는 사람이 많아요. 잠시 뒤에 다시 입장해 주세요."]
         if errors:
             return templates.TemplateResponse(
                 request,
@@ -252,7 +270,7 @@ async def join_room(request: Request, code: str):
 async def edit_page(request: Request, code: str):
     svc = services(request)
     async with svc.db.sessionmaker() as s:
-        room = await repo.room_by_code(s, code)
+        room = await find_room(request, s, code)
         if room is None:
             return _not_found(request)
         me = await current_participant(request, s, room)
@@ -272,7 +290,7 @@ async def edit_profile(request: Request, code: str):
     form = await request.form()
     data, errors = clean_profile(form)
     async with svc.db.sessionmaker() as s:
-        room = await repo.room_by_code(s, code)
+        room = await find_room(request, s, code)
         if room is None:
             return _not_found(request)
         me = await current_participant(request, s, room)
@@ -308,7 +326,7 @@ async def edit_profile(request: Request, code: str):
 async def leave_room(request: Request, code: str):
     svc = services(request)
     async with svc.db.sessionmaker() as s:
-        room = await repo.room_by_code(s, code)
+        room = await find_room(request, s, code)
         if room is None:
             return _not_found(request)
         me = await current_participant(request, s, room)
@@ -339,7 +357,7 @@ async def read_card(request: Request, code: str, file: UploadFile = File(...)):
     if svc.ai is None:
         return JSONResponse({"error": "명함 읽기가 꺼져 있어요. 직접 적어주세요."}, status_code=503)
     async with svc.db.sessionmaker() as s:
-        room = await repo.room_by_code(s, code)
+        room = await find_room(request, s, code)
         if room is None:
             return JSONResponse({"error": "방을 찾을 수 없어요."}, status_code=404)
     if not svc.card_ip_limiter.allow(client_ip(request)) or not svc.card_room_limiter.allow(code):
@@ -377,7 +395,7 @@ async def read_card(request: Request, code: str, file: UploadFile = File(...)):
 async def screen(request: Request, code: str):
     svc = services(request)
     async with svc.db.sessionmaker() as s:
-        room = await repo.room_by_code(s, code)
+        room = await find_room(request, s, code)
         if room is None:
             return _not_found(request)
         count = await repo.count_participants(s, room.id)
@@ -391,7 +409,7 @@ async def screen(request: Request, code: str):
 async def screen_count(request: Request, code: str):
     svc = services(request)
     async with svc.db.sessionmaker() as s:
-        room = await repo.room_by_code(s, code)
+        room = await find_room(request, s, code)
         if room is None:
             return JSONResponse({"error": "not_found"}, status_code=404)
         return {"count": await repo.count_participants(s, room.id), "closed": room.is_closed}

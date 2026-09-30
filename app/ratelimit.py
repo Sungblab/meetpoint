@@ -10,14 +10,21 @@ class RateLimiter:
         self.window = window_seconds
         self._hits: dict[str, deque[float]] = {}
 
-    def allow(self, key: str) -> bool:
+    def blocked(self, key: str) -> bool:
+        """기록하지 않고 한도에 닿았는지만 본다. 실패만 세는 제한(없는 방 코드, 틀린 비밀번호)에 쓴다."""
+        hits = self._hits.get(key)
+        if not hits:
+            return False
         now = time.monotonic()
-        hits = self._hits.setdefault(key, deque())
         while hits and now - hits[0] > self.window:
             hits.popleft()
-        if len(hits) >= self.limit:
+        return len(hits) >= self.limit
+
+    def allow(self, key: str) -> bool:
+        if self.blocked(key):
             return False
-        hits.append(now)
+        now = time.monotonic()
+        self._hits.setdefault(key, deque()).append(now)
         if len(self._hits) > 10_000:
-            self._hits = {k: v for k, v in self._hits.items() if v}
+            self._hits = {k: v for k, v in self._hits.items() if v and now - v[-1] <= self.window}
         return True

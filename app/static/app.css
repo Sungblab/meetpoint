@@ -652,6 +652,7 @@ a.ecard-line:hover span { text-decoration: underline; text-underline-offset: 3px
 .people-mini li strong { flex: none; font-size: 16px; font-weight: 800; color: var(--on-table); }
 .people-mini li .sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--on-table-2); }
 .people-mini li.muted { color: var(--on-table-2); }
+.people-mini li .btn { flex: none; align-self: center; margin-left: auto; }
 
 .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
 .actions form { margin: 0; }

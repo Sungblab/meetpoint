@@ -13,7 +13,8 @@ def hash_token(token: str) -> str:
     return hashlib.sha256(token.encode()).hexdigest()
 
 
-def new_room_code(length: int = 6) -> str:
+def new_room_code(length: int = 8) -> str:
+    # 31자 중 8자리(약 8,500억 가지)라 맞혀 보기 어렵다. 예전에 만든 6자리 방도 그대로 쓴다.
     return "".join(secrets.choice(ROOM_CODE_ALPHABET) for _ in range(length))
 
 
