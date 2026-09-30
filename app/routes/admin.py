@@ -11,17 +11,24 @@ from sqlalchemy.orm import aliased
 
 from .. import repo
 from ..models import Like, Participant, Room
-from ..web import services, templates
+from ..web import client_ip, services, templates
 
 KST = timezone(timedelta(hours=9))
 basic = HTTPBasic(auto_error=False)
 
 
 def require_admin(request: Request, cred: HTTPBasicCredentials | None = Depends(basic)) -> None:
-    password = services(request).settings.admin_password
+    svc = services(request)
+    password = svc.settings.admin_password
     if not password:
         raise HTTPException(404)
+    # 틀린 비밀번호만 센다. 한도에 닿으면 맞는 비밀번호도 잠시 받지 않아 비밀번호를 맞혀 보지 못한다.
+    ip = client_ip(request)
+    if svc.admin_limiter.blocked(ip):
+        raise HTTPException(429)
     if cred is None or not secrets.compare_digest(cred.password.encode(), password.encode()):
+        if cred is not None:
+            svc.admin_limiter.allow(ip)
         raise HTTPException(401, headers={"WWW-Authenticate": 'Basic realm="Meetpoint admin"'})
 
 

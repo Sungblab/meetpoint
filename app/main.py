@@ -13,7 +13,7 @@ from .db import Database
 from .matching.ai import AIClient
 from .matching.service import MatchingService, purge_legacy_rooms
 from .routes import admin, api, host, pages
-from .web import BASE_DIR, Services
+from .web import BASE_DIR, CrossSiteGuard, Services
 
 log = logging.getLogger("meetpoint")
 
@@ -69,6 +69,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(title="Meetpoint", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
     app.state.services = svc
+    app.add_middleware(CrossSiteGuard)
     app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
     app.include_router(pages.router)
     app.include_router(host.router)

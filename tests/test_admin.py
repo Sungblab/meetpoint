@@ -28,6 +28,17 @@ def test_admin_needs_password(admin_app):
         assert c.get("/admin/r/ZZZZZZ", auth=("admin", "wrong")).status_code == 401
 
 
+def test_admin_blocks_repeated_wrong_passwords(admin_app):
+    with TestClient(admin_app) as c:
+        for _ in range(3):
+            assert c.get("/admin").status_code == 401  # 비밀번호를 묻는 첫 요청은 세지 않는다
+        for _ in range(10):
+            assert c.get("/admin", auth=("admin", "wrong")).status_code == 401
+        assert c.get("/admin", auth=("admin", "wrong")).status_code == 429
+        # 한도에 닿으면 맞는 비밀번호도 잠시 받지 않는다.
+        assert c.get("/admin", auth=AUTH).status_code == 429
+
+
 def test_admin_shows_rooms_and_people_without_contacts(admin_app):
     with TestClient(admin_app) as host, new_client(admin_app) as a, new_client(admin_app) as b:
         _, code = create_room(host, name="AI 서비스 밋업")

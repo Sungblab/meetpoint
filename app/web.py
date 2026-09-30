@@ -2,11 +2,14 @@
 
 import io
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import qrcode
 import qrcode.image.svg
 from fastapi import Request
+from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 from .broker import Broker
 from .config import Settings
@@ -46,6 +49,8 @@ class Services:
         self.card_room_limiter = RateLimiter(limit=2 * settings.max_participants, window_seconds=86400)
         # 추천을 다시 계산하게 하는 소개 수정은 참가자마다 1분에 두 번까지. 오타 한 번 고칠 여유만 둔다.
         self.edit_limiter = RateLimiter(limit=2, window_seconds=60)
+        # 운영자 비밀번호를 틀린 IP는 15분에 10번까지.
+        self.admin_limiter = RateLimiter(limit=10, window_seconds=900)
 
 
 def services(request: Request) -> Services:
@@ -54,6 +59,32 @@ def services(request: Request) -> Services:
 
 def client_ip(request: Request) -> str:
     return request.client.host if request.client else "unknown"
+
+
+def is_cross_site(request: Request) -> bool:
+    """다른 사이트가 보낸 요청인지 브라우저가 붙이는 헤더로 본다. 둘 다 없으면 브라우저 밖(curl, 테스트)이다."""
+    site = request.headers.get("sec-fetch-site")
+    if site is not None:
+        return site not in ("same-origin", "none")
+    origin = request.headers.get("origin")
+    if origin is None:
+        return False
+    return urlsplit(origin).netloc != request.headers.get("host")
+
+
+class CrossSiteGuard:
+    """다른 사이트의 폼이나 스크립트로 입장·수정·삭제를 시키지 못하게 GET 외 요청을 막는다(CSRF).
+    SSE 같은 GET 응답을 감싸지 않도록 순수 ASGI로 둔다."""
+
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] == "http" and scope["method"] not in ("GET", "HEAD", "OPTIONS"):
+            if is_cross_site(Request(scope)):
+                await JSONResponse({"error": "cross_site"}, status_code=403)(scope, receive, send)
+                return
+        await self.app(scope, receive, send)
 
 
 def public_base(request: Request) -> str:

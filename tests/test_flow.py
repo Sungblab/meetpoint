@@ -362,6 +362,24 @@ def test_host_removes_participant(app):
         assert host.get(f"/h/{token}/api/stats").json()["participants"] == 1
 
 
+def test_cross_site_posts_are_rejected(app):
+    with new_client(app) as host, new_client(app) as a:
+        token, code = create_room(host)
+        profile = dict(DEV, about="다른 사이트가 보낸 소개")
+        for headers in ({"sec-fetch-site": "cross-site"}, {"sec-fetch-site": "same-site"},
+                        {"origin": "https://evil.example"}, {"origin": "null"}):
+            assert a.post(f"/r/{code}/join", data=profile, headers=headers).status_code == 403
+            assert host.post(f"/h/{token}/delete", headers=headers).status_code == 403
+            assert host.post("/rooms", data={"name": "방", "email": "x@example.com"}, headers=headers).status_code == 403
+        assert host.get(f"/h/{token}").status_code == 200
+        # 같은 사이트의 폼과 fetch는 그대로 된다.
+        res = a.post(f"/r/{code}/join", data=DEV, headers={"sec-fetch-site": "same-origin"}, follow_redirects=False)
+        assert res.status_code == 303
+        res = a.post(f"/r/{code}/me", data=DEV, headers={"origin": "http://testserver"}, follow_redirects=False)
+        assert res.status_code == 303
+        assert state(a, code)["me"]["name"] == DEV["name"]
+
+
 def test_legal_pages(client):
     assert "개인정보 보호책임자" in client.get("/privacy").text
     assert "금지 행위" in client.get("/terms").text
