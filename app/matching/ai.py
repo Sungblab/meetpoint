@@ -3,6 +3,7 @@
 import asyncio
 import json
 import logging
+import re
 
 import httpx
 from google import genai
@@ -146,10 +147,24 @@ class AIClient:
             raise AIUnavailable("bad_card_shape") from e
 
 
+# 참가자 소개에 심은 지시로 추천 이유에 주소나 연락처를 실어 퍼뜨리지 못하게 지운다.
+# ponytail: 흔한 모양(주소, 이메일, 국내 전화번호)만 본다. 새 모양이 보이면 여기에 더한다.
+_CONTACT_LIKE = re.compile(
+    r"(?:https?://|www\.)\S+"
+    r"|[\w.+-]+@[\w-]+(?:\.[\w-]+)+"
+    r"|[\w-]+(?:\.[\w-]+)*\.(?:com|net|org|io|kr|co|me|ly|app|dev|link|site|xyz)(?![A-Za-z0-9])\S*"
+    r"|\+?\d{2,4}[\s.-]?\d{3,4}[\s.-]?\d{4}"
+)
+
+
+def _scrub(text: str) -> str:
+    return " ".join(_CONTACT_LIKE.sub(" ", text).split())
+
+
 def _to_pair(d, *, limit: int = 200) -> PairResult:
     kind = d.kind
-    reason = d.reason.strip()[:limit]
-    opener = d.opener.strip()[:limit]
+    reason = _scrub(d.reason)[:limit]
+    opener = _scrub(d.opener)[:limit]
     if kind == "none":
         reason, opener = "", ""
     score = clamp_score(d.score)

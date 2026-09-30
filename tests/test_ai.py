@@ -127,6 +127,18 @@ def test_parse_drops_unknown_and_duplicate_ids_and_blanks_none():
     assert backward.score == 0
 
 
+def test_reasons_drop_links_and_contacts():
+    reason = "https://evil.example/join 에서 가입하고 010-1234-5678이나 a@evil.co.kr, evil.com으로 연락해요"
+    data = {"results": [{"candidate_id": 2,
+                         "for_new": {"kind": "common", "score": 90, "reason": reason, "opener": "www.evil.kr 보셨어요?"},
+                         "for_candidate": {"kind": "common", "score": 90, "reason": "ASP.NET 경험이 2020.03.01부터 있어요", "opener": "안녕하세요"}}]}
+    forward, backward = parse_recommendations(data, {2})[2]
+    assert forward.reason == "에서 가입하고 이나 , 연락해요"
+    assert forward.opener == "보셨어요?"
+    # 주소나 전화번호가 아닌 글은 그대로 둔다.
+    assert backward.reason == "ASP.NET 경험이 2020.03.01부터 있어요"
+
+
 def test_card_request_sends_image_with_low_thinking():
     card = ('{"is_business_card":true,"name":"홍길동","company":"회사","job_title":"대표","headline":"","about":"회사 대표예요",'
             '"phone":"010-1234-5678","email":"a@b.c","contact":"https://example.com"}')

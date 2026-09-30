@@ -10,6 +10,7 @@ def _esc(value: str) -> str:
         .replace(",", "\\,")
         .replace(";", "\\;")
         .replace("\r\n", "\\n")
+        .replace("\r", "\\n")  # 홀로 쓴 CR도 줄바꿈으로 읽는 연락처 앱이 있어 칸을 새로 끼워 넣지 못하게 한다
         .replace("\n", "\\n")
     )
 

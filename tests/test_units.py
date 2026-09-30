@@ -180,6 +180,11 @@ def test_vcard_escapes_special_characters():
     assert "NOTE:이유\\n둘째 줄\\n기타 연락처: 카톡 abc" in body
     assert body.startswith("BEGIN:VCARD\r\nVERSION:3.0\r\n")
     assert body.endswith("END:VCARD\r\n")
+    # 홀로 쓴 CR로 URL 같은 칸을 끼워 넣지 못한다.
+    body = build_vcard(name="가", company="", job_title="", headline="", phone="", email="", other="",
+                       note="이유\rURL:https://evil.example")
+    assert "NOTE:이유\\nURL:https://evil.example\r\n" in body
+    assert "\rURL" not in body
 
 
 def test_vcard_puts_company_and_title_in_their_own_fields():
