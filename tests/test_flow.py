@@ -207,6 +207,21 @@ def test_edit_profile_recomputes(app):
     assert asyncio.run(version()) == 2
 
 
+def test_profile_edits_are_rate_limited(app):
+    with new_client(app) as host, new_client(app) as a:
+        _, code = create_room(host)
+        join(a, code, **DEV)
+        for i in range(2):
+            res = a.post(f"/r/{code}/me", data=dict(DEV, about=f"소개 {i}"), follow_redirects=False)
+            assert res.status_code == 303
+        res = a.post(f"/r/{code}/me", data=dict(DEV, about="소개 셋째"), follow_redirects=False)
+        assert res.status_code == 429
+        assert "1분 뒤에" in res.text and "소개 셋째" in res.text
+        # 연락처만 고치면 추천을 다시 계산하지 않으니 막지 않는다.
+        res = a.post(f"/r/{code}/me", data=dict(DEV, about="소개 1", phone="010-1234-5678"), follow_redirects=False)
+        assert res.status_code == 303
+
+
 def test_contact_only_edit_keeps_version(app):
     with new_client(app) as host, new_client(app) as a:
         _, code = create_room(host)

@@ -40,6 +40,8 @@ class Services:
         self.card_ip_limiter = RateLimiter(limit=600, window_seconds=3600)
         # 명함 읽기는 AI 비용이 드니 방마다 정원의 두 배까지만 허용한다.
         self.card_room_limiter = RateLimiter(limit=2 * settings.max_participants, window_seconds=86400)
+        # 추천을 다시 계산하게 하는 소개 수정은 참가자마다 1분에 두 번까지. 오타 한 번 고칠 여유만 둔다.
+        self.edit_limiter = RateLimiter(limit=2, window_seconds=60)
 
 
 def services(request: Request) -> Services:

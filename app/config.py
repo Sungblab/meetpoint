@@ -33,6 +33,10 @@ class Settings(BaseSettings):
     ai_batch_size: int = 20
     ai_concurrency: int = 6
     ai_timeout_seconds: float = 90.0
+    # 하루 AI 호출 상한(추천과 명함 읽기를 합친 수). 넘으면 추천은 키워드로 채우고 명함 읽기는 멈춘다.
+    ai_daily_limit: int = 10000
+    # 방 하나의 하루 추천 호출 상한. 300명이 차례로 들어와도 약 2,300번이라 수정까지 넉넉하다.
+    ai_room_daily_limit: int = 3000
 
     max_participants: int = 300
     max_card_bytes: int = 5 * 1024 * 1024

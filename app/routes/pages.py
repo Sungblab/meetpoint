@@ -278,14 +278,17 @@ async def edit_profile(request: Request, code: str):
         me = await current_participant(request, s, room)
         if me is None:
             return RedirectResponse(f"/r/{code}", status_code=303)
+        changed = any(getattr(me, k) != data[k] for k in MATCHING_FIELDS)
+        status = 400
+        if not errors and changed and not svc.edit_limiter.allow(str(me.id)):
+            errors, status = ["방금 저장했어요. 1분 뒤에 다시 저장해 주세요."], 429
         if errors:
             return templates.TemplateResponse(
                 request,
                 "join.html",
                 {"room": room, "values": data, "errors": errors, "mode": "edit", "ai_enabled": svc.settings.ai_enabled, "left": False},
-                status_code=400,
+                status_code=status,
             )
-        changed = any(getattr(me, k) != data[k] for k in MATCHING_FIELDS)
         for key, value in data.items():
             setattr(me, key, value)
         me.updated_at = utcnow()

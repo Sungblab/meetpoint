@@ -11,12 +11,16 @@ from ..broker import Broker
 from ..config import Settings
 from ..db import Database
 from ..models import Participant, Recommendation, Room, utcnow
+from ..ratelimit import RateLimiter
 from ..repo import delete_room
 from . import heuristic
 from .ai import AIClient, AIUnavailable
 from .schemas import PairResult, Profile
 
 log = logging.getLogger(__name__)
+
+# 동시에 살아 있는 추천 작업 수. 넘으면 새 작업은 AI 없이 키워드로 추천한다.
+MAX_JOBS = 200
 
 
 def to_profile(p: Participant) -> Profile:
@@ -39,28 +43,43 @@ class MatchingService:
         self.broker = broker
         self.settings = settings
         self.ai = ai
-        self._tasks: set[asyncio.Task] = set()
-        self._ai_slots = asyncio.Semaphore(max(1, settings.ai_concurrency))
+        # 참가자마다 작업은 하나만 돈다. 도는 중에 또 들어온 요청은 끝난 뒤 최신 프로필로 한 번만 다시 돈다.
+        self._jobs: dict[int, asyncio.Task] = {}
+        self._again: set[int] = set()
+        self._room_budget = RateLimiter(limit=settings.ai_room_daily_limit, window_seconds=86400)
 
     async def enqueue(self, room_id: int, participant_id: int) -> None:
         if self.settings.inline_tasks:
             await self.run(room_id, participant_id)
             return
-        task = asyncio.create_task(self.run(room_id, participant_id))
-        self._tasks.add(task)
-        task.add_done_callback(self._tasks.discard)
+        if participant_id in self._jobs:
+            self._again.add(participant_id)
+            return
+        use_ai = len(self._jobs) < MAX_JOBS
+        self._jobs[participant_id] = asyncio.create_task(self._loop(room_id, participant_id, use_ai))
+
+    async def _loop(self, room_id: int, participant_id: int, use_ai: bool) -> None:
+        try:
+            while True:
+                self._again.discard(participant_id)
+                await self.run(room_id, participant_id, use_ai)
+                if participant_id not in self._again:
+                    break
+        finally:
+            # 위 확인과 여기 사이에 await가 없어서, 그 사이 들어온 요청을 놓치지 않는다.
+            self._jobs.pop(participant_id, None)
 
     async def wait_idle(self) -> None:
-        while self._tasks:
-            await asyncio.gather(*list(self._tasks), return_exceptions=True)
+        while self._jobs:
+            await asyncio.gather(*list(self._jobs.values()), return_exceptions=True)
 
-    async def run(self, room_id: int, participant_id: int) -> None:
+    async def run(self, room_id: int, participant_id: int, use_ai: bool = True) -> None:
         try:
-            await self._run(room_id, participant_id)
+            await self._run(room_id, participant_id, use_ai)
         except Exception:
             log.exception("recommendation job failed room=%s participant=%s", room_id, participant_id)
 
-    async def _run(self, room_id: int, participant_id: int) -> None:
+    async def _run(self, room_id: int, participant_id: int, use_ai: bool) -> None:
         async with self.db.sessionmaker() as s:
             me = await s.get(Participant, participant_id)
             if me is None or me.room_id != room_id:
@@ -78,7 +97,7 @@ class MatchingService:
         size = max(1, self.settings.ai_batch_size)
         for start in range(0, len(others), size):
             batch = others[start : start + size]
-            results = await self._evaluate(new, batch)
+            results = await self._evaluate(room_id, new, batch, use_ai)
             await self._save(room_id, new, batch, results)
             for pid in (new.id, *(c.id for c in batch)):
                 self.broker.publish(room_id, "refresh", to=pid)
@@ -92,12 +111,14 @@ class MatchingService:
         # 주최자 화면의 "추천 계산 중" 숫자를 갱신한다. 참가자 화면은 이 이벤트를 무시한다.
         self.broker.publish(room_id, "stats")
 
-    async def _evaluate(self, new: Profile, batch: list[Profile]) -> dict[int, tuple[PairResult, PairResult]]:
+    async def _evaluate(
+        self, room_id: int, new: Profile, batch: list[Profile], use_ai: bool = True
+    ) -> dict[int, tuple[PairResult, PairResult]]:
         results: dict[int, tuple[PairResult, PairResult]] = {}
-        if self.ai is not None:
+        # 방의 하루 호출 수를 넘으면 키워드 추천으로 채운다.
+        if use_ai and self.ai is not None and self._room_budget.allow(str(room_id)):
             try:
-                async with self._ai_slots:
-                    results = await self.ai.recommend(new, batch)
+                results = await self.ai.recommend(new, batch)
             except AIUnavailable as e:
                 log.warning("AI recommendation unavailable (%s); using keyword fallback", e)
             except Exception:

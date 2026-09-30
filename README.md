@@ -118,8 +118,10 @@ sudo certbot --nginx -d meetpoint.example.com
 | `AI_CARD_EFFORT` | `low` | 명함 읽기의 thinking level |
 | `AI_BATCH_SIZE` | `20` | 한 번에 평가할 후보 수 |
 | `AI_CONCURRENCY` | `6` | 동시에 보내는 AI 요청 수 |
+| `AI_DAILY_LIMIT` | `10000` | 하루 AI 호출 상한(추천과 명함 읽기를 합친 수). 넘으면 추천은 키워드로 채우고 명함 읽기는 멈춥니다 |
+| `AI_ROOM_DAILY_LIMIT` | `3000` | 방 하나의 하루 추천 호출 상한 |
 
-호출 수는 인원의 제곱에 비례해 늘어납니다. 모든 쌍을 한 번씩 평가하므로 100명이 차례로 들어오면 약 300번, 300명이면 약 2,400번 호출합니다. 첫 행사에서 Google AI Studio의 사용량과 요청 한도를 보고 모델과 thinking level을 정하세요. 한도를 넘어 실패한 묶음은 키워드 추천으로 채워집니다.
+호출 수는 인원의 제곱에 비례해 늘어납니다. 모든 쌍을 한 번씩 평가하므로 100명이 차례로 들어오면 약 300번, 300명이면 약 2,400번 호출합니다. 첫 행사에서 Google AI Studio의 사용량과 요청 한도를 보고 모델과 thinking level을 정하세요. 한도를 넘어 실패한 묶음은 키워드 추천으로 채워집니다. 참가자 한 명의 추천 작업은 한 번에 하나만 돌고, 소개 수정은 1분에 두 번까지 받습니다.
 
 thinking level을 받지 않는 `gemini-2.5-flash` 같은 모델을 쓰려면 `AI_EFFORT=`와 `AI_CARD_EFFORT=`를 비워 둡니다. 모델을 바꾼 뒤에는 추천 이유의 질을 실제 입력으로 확인해 보세요.
 

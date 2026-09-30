@@ -5,7 +5,10 @@ import httpx
 import pytest
 from google.genai import errors, types
 
+from app.broker import Broker
 from app.config import Settings
+from app.main import create_app
+from app.matching import service
 from app.matching.ai import AIClient, AIUnavailable, parse_recommendations
 from app.matching.schemas import RECOMMENDATION_SCHEMA, CardOut, PairResult, Profile
 
@@ -96,6 +99,14 @@ def test_api_errors_raise_unavailable(error):
     ai, _ = _client(error=error)
     with pytest.raises(AIUnavailable):
         asyncio.run(ai.recommend(P1, [P2]))
+
+
+def test_daily_limit_covers_recommendations_and_cards():
+    ai, fake = _client(response=_response(GOOD), ai_daily_limit=1)
+    asyncio.run(ai.recommend(P1, [P2]))
+    with pytest.raises(AIUnavailable):
+        asyncio.run(ai.read_card(b"\xff\xd8\xffdata", "image/jpeg"))
+    assert len(fake.calls) == 1
 
 
 def test_parse_drops_unknown_and_duplicate_ids_and_blanks_none():
@@ -200,6 +211,47 @@ def test_large_room_is_evaluated_in_batches(app, settings):
     # 0+1+1+2+2 배치 (들어올 때마다 기존 인원을 2명씩 나눠 평가)
     assert fake.calls == 6
     assert all(p["rec"]["source"] == "ai" for p in last["people"])
+
+
+def test_room_ai_budget_falls_back_to_keywords(settings):
+    settings.ai_room_daily_limit = 1
+    app = create_app(settings)
+    fake = FakeAI()
+    _with_ai(app, fake)
+    with new_client(app) as host, new_client(app) as a, new_client(app) as b, new_client(app) as c:
+        _, code = create_room(host)
+        join(a, code, **DEV)
+        join(b, code, **MARKETER)
+        join(c, code, name="셋째", about="쇼핑몰 개발자", ask_same="배포")
+        people = state(c, code)["people"]
+    assert fake.calls == 1
+    assert {p["rec"]["source"] for p in people} == {"heuristic"}
+
+
+def test_matching_runs_one_job_per_participant(monkeypatch):
+    async def run():
+        matching = service.MatchingService(None, Broker(), Settings(_env_file=None), None)
+        calls = []
+        gate = asyncio.Event()
+
+        async def fake_run(room_id, participant_id, use_ai=True):
+            calls.append((participant_id, use_ai))
+            await gate.wait()
+
+        matching.run = fake_run
+        await matching.enqueue(1, 10)
+        await asyncio.sleep(0)
+        for _ in range(5):
+            await matching.enqueue(1, 10)
+        monkeypatch.setattr(service, "MAX_JOBS", 1)
+        await matching.enqueue(1, 11)
+        gate.set()
+        await matching.wait_idle()
+        return calls
+
+    calls = asyncio.run(run())
+    # 도는 중에 다섯 번 더 불러도 끝난 뒤 한 번만 다시 돈다. 작업이 많으면 새 작업은 AI를 쓰지 않는다.
+    assert sorted(calls) == [(10, True), (10, True), (11, False)]
 
 
 def test_card_endpoint(app):

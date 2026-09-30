@@ -1,5 +1,6 @@
 """Gemini 호출. 추천 평가(한 사람 대 여러 후보)와 명함 읽기."""
 
+import asyncio
 import json
 import logging
 
@@ -9,6 +10,7 @@ from google.genai import errors, types
 from pydantic import ValidationError
 
 from ..config import Settings
+from ..ratelimit import RateLimiter
 from .schemas import (
     CARD_SCHEMA,
     RECOMMENDATION_SCHEMA,
@@ -75,8 +77,13 @@ class AIClient:
                 retry_options=types.HttpRetryOptions(attempts=3),
             ),
         ).aio
+        # 추천과 명함 읽기가 동시 호출 수와 하루 상한을 함께 쓴다.
+        self._slots = asyncio.Semaphore(max(1, settings.ai_concurrency))
+        self._daily = RateLimiter(limit=settings.ai_daily_limit, window_seconds=86400)
 
     async def _structured(self, system: str, contents: list, schema: dict, effort: str) -> dict:
+        if not self._daily.allow("all"):
+            raise AIUnavailable("daily_limit")
         config = types.GenerateContentConfig(
             system_instruction=system,
             max_output_tokens=16000,
@@ -88,9 +95,10 @@ class AIClient:
             automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
         )
         try:
-            response = await self.client.models.generate_content(
-                model=self.settings.ai_model, contents=contents, config=config
-            )
+            async with self._slots:
+                response = await self.client.models.generate_content(
+                    model=self.settings.ai_model, contents=contents, config=config
+                )
         except errors.APIError as e:
             log.warning("Gemini API error %s: %s", e.code, e.message)
             raise AIUnavailable(f"api_error_{e.code}") from e
