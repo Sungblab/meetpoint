@@ -35,6 +35,8 @@ def sse_response(request: Request, broker: Broker, room_id: int, participant_id:
                     yield ": ping\n\n"
                     continue
                 yield f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+                if event == "closed":
+                    break
         finally:
             broker.unsubscribe(sub)
 

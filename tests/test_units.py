@@ -11,6 +11,7 @@ from app.matching.schemas import Profile
 from app.matching.service import purge_legacy_rooms
 from app.models import Participant, Room
 from app.ratelimit import RateLimiter
+from app.routes.api import sse_response
 from app.vcard import build_vcard
 
 
@@ -66,6 +67,41 @@ def test_broker_drops_when_queue_full():
         assert sub.queue.qsize() == 100
 
     asyncio.run(run())
+
+
+def test_broker_closes_oldest_stream_over_limits():
+    async def run():
+        broker = Broker(per_client=3, total=5)
+        a = [broker.subscribe(1, 10) for _ in range(4)]
+        # 한 사람이 네 번째 연결을 열면 가장 오래된 연결이 닫힌다.
+        assert a[0].queue.get_nowait() == ("closed", {})
+        broker.publish(1, "refresh", to=10)
+        assert [s.queue.qsize() for s in a] == [0, 1, 1, 1]
+        hosts = [broker.subscribe(1, None) for _ in range(4)]
+        assert hosts[0].queue.get_nowait() == ("closed", {})
+        # 전체 한도를 넘으면 참가자와 상관없이 가장 오래된 연결부터 닫는다.
+        # 닫을 때는 쌓인 알림을 비우고 closed만 남긴다.
+        assert list(a[1].queue._queue) == [("closed", {})]
+        broker.subscribe(2, 20)
+        assert list(a[2].queue._queue) == [("closed", {})]
+        assert broker.subscriber_count(1) == 4 and broker.subscriber_count(2) == 1
+
+    asyncio.run(run())
+
+
+def test_sse_stream_ends_when_broker_closes_it():
+    class Connected:
+        async def is_disconnected(self):
+            return False
+
+    async def run():
+        broker = Broker(per_client=1)
+        res = sse_response(Connected(), broker, 1, 10)
+        broker.subscribe(1, 10)  # 같은 사람의 새 연결이 먼저 연 연결을 닫는다
+        return [chunk async for chunk in res.body_iterator]
+
+    chunks = asyncio.run(run())
+    assert chunks[-1] == "event: closed\ndata: {}\n\n"
 
 
 def test_rate_limiter():

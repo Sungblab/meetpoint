@@ -237,6 +237,8 @@
       if (navigator.vibrate) navigator.vibrate(150);
       scheduleLoad(0);
     });
+    // 같은 사람이 연결을 너무 많이 열어 서버가 이 연결을 닫았다. 다시 붙지 않고 30초 새로고침으로 버틴다.
+    es.addEventListener("closed", () => es.close());
     es.addEventListener("gone", () => {
       es.close();
       location.reload();

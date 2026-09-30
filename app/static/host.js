@@ -46,6 +46,8 @@
     es.addEventListener("hello", schedule);
     es.addEventListener("refresh", schedule);
     es.addEventListener("stats", schedule);
+    // 연결이 너무 많아 서버가 닫았다. 다시 붙지 않고 30초 새로고침으로 버틴다.
+    es.addEventListener("closed", () => es.close());
   }
   setInterval(() => document.visibilityState === "visible" && schedule(), 30000);
   load().catch(() => {});
