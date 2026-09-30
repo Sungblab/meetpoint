@@ -127,6 +127,20 @@ async def terms(request: Request):
     return templates.TemplateResponse(request, "terms.html", {})
 
 
+@router.get("/robots.txt", include_in_schema=False)
+async def robots(request: Request):
+    body = "User-agent: *\nDisallow: /r/\nDisallow: /h/\nDisallow: /s/\nDisallow: /admin\nDisallow: /join\n"
+    return Response(body + f"\nSitemap: {public_base(request)}/sitemap.xml\n", media_type="text/plain")
+
+
+@router.get("/sitemap.xml", include_in_schema=False)
+async def sitemap(request: Request):
+    base = public_base(request)
+    urls = "".join(f"<url><loc>{base}{p}</loc></url>" for p in ("/", "/privacy", "/terms"))
+    body = f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>'
+    return Response(body, media_type="application/xml")
+
+
 @router.get("/join")
 async def join_by_code(code: str = ""):
     cleaned = _CODE_CLEAN.sub("", code).upper()

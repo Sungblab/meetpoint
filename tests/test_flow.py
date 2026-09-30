@@ -389,6 +389,14 @@ def test_legal_pages(client):
     assert "휴대폰 연락처에 저장할 수 있습니다" in privacy
 
 
+def test_robots_and_sitemap(client):
+    robots = client.get("/robots.txt").text
+    assert "Disallow: /r/" in robots and "Disallow: /h/" in robots
+    assert "/sitemap.xml" in robots
+    sitemap = client.get("/sitemap.xml").text
+    assert "/privacy</loc>" in sitemap and "/r/" not in sitemap
+
+
 def test_join_validates_phone_and_email(client):
     _, code = create_room(client)
     res = client.post(f"/r/{code}/join", data=dict(DEV, phone="전화해", email="dev-at-example"), follow_redirects=False)
